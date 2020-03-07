@@ -31,7 +31,7 @@ public class Lexer {
           line = line.trim();
 
           // Assigning first value in enum
-          LexemType relevantLexemType = LexemType.VALAR_MORGHULIS;
+          LexemType relevantLexemType = LexemType.values()[0];
 
           // Modifying original regex pattern for our purpose
           String real_regex = "^(" + relevantLexemType.getPattern().pattern() + ")";
