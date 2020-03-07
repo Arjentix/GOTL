@@ -28,7 +28,7 @@ YGRITTE -> Ygritte:
 TYPE -> int|double|string
 VAR -> [a-zA-z]+
 ASSIGN_OP -> =
-DIGIT -> 0|([1-9][0-9])
+DIGIT -> 0|([1-9][0-9]*)
 OP -> +|-|*|/
 LOGIC_OP -> >|<|==|>=|<=
 CONST_STRING -> ".*"
