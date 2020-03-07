@@ -7,8 +7,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.regex.Matcher;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.regex.Pattern;
 
 
 public class Lexer {
@@ -26,32 +25,31 @@ public class Lexer {
     for (String line : getLines(rawInput)) {
       try {
         ++lineCounter;
-        LexemType relevantLexemType = LexemType.VALAR_MORGHULIS;
-        Map<Integer, Token> orderedTokens = new TreeMap<Integer, Token>();
 
         // While line contains something (except spaces)
         while (line.matches("(\\s*\\S+\\s*)+")) {
-          // System.out.println("Line = \"" + line + "\"");
-          Matcher matcher = relevantLexemType.getPattern().matcher(line);
+          line = line.trim();
+
+          // Assigning first value in enum
+          LexemType relevantLexemType = LexemType.VALAR_MORGHULIS;
+
+          // Modifying original regex pattern for our purpose
+          String real_regex = "^(" + relevantLexemType.getPattern().pattern() + ")";
+          Matcher matcher = Pattern.compile(real_regex).matcher(line);
 
           // Finding relevant lexeme type or throwing exception
           while (!matcher.find()) {
             relevantLexemType = getNextLexemType(relevantLexemType);
-            matcher.usePattern(relevantLexemType.getPattern());
+            real_regex = "^(" + relevantLexemType.getPattern().pattern() + ")";
+            matcher.usePattern(Pattern.compile(real_regex));
           }
           // Relevant lexeme type was founded
 
-          // Adding founded lexeme to the map for right lexeme order
           String value = matcher.group(0);
-          orderedTokens.put(matcher.start(), new Token(relevantLexemType, value));
+          tokens.add(new Token(relevantLexemType, value));
     
           // Replacing first founded value with spaces
-          line = matcher.replaceFirst(value.replaceAll(".", " "));
-        }
-
-        for (Map.Entry<Integer, Token> entry : orderedTokens.entrySet()) {
-          // System.out.println("Iterating: key = " + entry.getKey() + ", value = \"" + entry.getValue() + "\"");
-          tokens.add(entry.getValue());
+          line = matcher.replaceFirst("");
         }
       }
       catch (IndexOutOfBoundsException ex) {
