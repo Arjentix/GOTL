@@ -13,7 +13,7 @@ body -> OPEN_BRACKET expr+ CLOSE_BRACKET
 while_expr -> ARYA while_head body
 while_head -> WHILE_KW logical_head
 input_expr -> YGRITTE (INPUT_OUTPUT_OP VAR)+
-output_expr -> JON_SNOW (INPUT_OUTPUT_OP output_value)+
+output_expr -> JON (INPUT_OUTPUT_OP output_value)+
 output_value -> value|CONST_STRING
 
 VALAR_MORGHULIS -> Valar Morghulis
@@ -23,7 +23,7 @@ DAENERIS -> Daeneris:
 TYRION -> Tyrion:
 CERCEI -> Cercei:
 ARYA -> Arya:
-JON_SNOW -> Jon Snow:
+JON -> Jon:
 YGRITTE -> Ygritte:
 TYPE -> int|double|string
 VAR -> [a-zA-z]+
