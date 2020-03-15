@@ -6,4 +6,6 @@ Maester: int b;
 Daeneris: b = Tyrion: a * 7;
 Jon: -- a;
 
+Arya: while (a < b)
+
 Valar Dohaeris
