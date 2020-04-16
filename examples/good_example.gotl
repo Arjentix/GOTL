@@ -1,0 +1,9 @@
+Valar Morghulis
+
+Maester: int a;
+Daeneris: a = 5;
+Maester: int b;
+Daeneris: b = Tyrion: a * 7;
+Jon: -- a;
+
+Valar Dohaeris
