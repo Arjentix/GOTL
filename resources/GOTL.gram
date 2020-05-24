@@ -3,7 +3,8 @@ expr -> decl_expr|assign_expr|cond_expr|while_expr|input_expr|output_expr
 assign_expr -> DAENERIS VAR ASSIGN_OP value_expr SEMICOLON
 value_expr -> value|arithm_expr
 value -> VAR|DIGIT
-arithm_expr -> TYRION value (OP value)+
+arithm_expr -> TYRION value (op value)+
+op -> PLUS_MINUS | MULT_DIV
 cond_expr -> CERSEI cond_head body
 cond_head -> IF_KW logical_head
 logical_head -> OPEN_PARANTH logical_expr CLOSE_PARANTH
@@ -26,7 +27,8 @@ YGRITTE -> Ygritte:
 VAR -> [a-zA-z]+
 ASSIGN_OP -> =
 DIGIT -> 0|([1-9][0-9]*)
-OP -> +|-|*|/
+PLUS_MINUS -> +|-
+MULT_DIV -> *|/
 LOGIC_OP -> >|<|==|>=|<=
 CONST_STRING -> ".*"
 IF_KW = if

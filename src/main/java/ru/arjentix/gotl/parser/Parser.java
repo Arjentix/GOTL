@@ -130,7 +130,19 @@ public class Parser {
   }
 
   private ParseResult op() {
-    return matchToken(match(), LexemType.OP);
+    List<Function<Object, ParseResult>> expressions = new ArrayList<>();
+    expressions.add((arg0) -> {return plus_minus();});
+    expressions.add((arg0) -> {return mult_div();});
+
+    return orOperation(expressions);
+  }
+
+  private ParseResult plus_minus() {
+      return matchToken(match(), LexemType.PLUS_MINUS);
+  }
+
+  private ParseResult mult_div() {
+      return matchToken(match(), LexemType.MULT_DIV);
   }
 
   private ParseResult tyrion() {
