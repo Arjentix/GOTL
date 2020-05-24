@@ -63,7 +63,6 @@ public class Parser {
 
   private ParseResult expr() {
     List<Function<Object, ParseResult>> expressions = new ArrayList<>();
-    expressions.add((arg) -> {return declExpr();});
     expressions.add((arg) -> {return assignExpr();});
     expressions.add((arg) -> {return condExpr();});
     expressions.add((arg) -> {return whileExpr();});
@@ -71,16 +70,6 @@ public class Parser {
     expressions.add((arg) -> {return outputExpr();});
 
     return orOperation(expressions);
-  }
-
-  private ParseResult declExpr() {
-    List<Function<Object, ParseResult>> expressions = new ArrayList<>();
-    expressions.add((arg0) -> {return maester();});
-    expressions.add((arg0) -> {return type();});
-    expressions.add((arg0) -> {return var();});
-    expressions.add((arg0) -> {return semicolon();});
-
-    return andOperation(expressions);
   }
 
   private ParseResult assignExpr() {
@@ -92,14 +81,6 @@ public class Parser {
     expressions.add((arg0) -> {return semicolon();});
 
     return andOperation(expressions);
-  }
-
-  private ParseResult maester() {
-    return matchToken(match(), LexemType.MAESTER);
-  }
-
-  private ParseResult type() {
-    return matchToken(match(), LexemType.TYPE);
   }
 
   private ParseResult var() {

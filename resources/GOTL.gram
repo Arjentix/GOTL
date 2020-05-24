@@ -1,7 +1,6 @@
 lang -> VALAR_MORGHULIS expr+ VALAR_DOHAERIS
-expr -> decl_expr|assing_expr|cond_expr|while_expr|input_expr|output_expr
-decl_expr -> MAESTER TYPE VAR SEMICOLON
-assing_expr -> DAENERIS VAR ASSIGN_OP value_expr SEMICOLON
+expr -> decl_expr|assign_expr|cond_expr|while_expr|input_expr|output_expr
+assign_expr -> DAENERIS VAR ASSIGN_OP value_expr SEMICOLON
 value_expr -> value|arithm_expr
 value -> VAR|DIGIT
 arithm_expr -> TYRION value (OP value)+
@@ -18,14 +17,12 @@ output_value -> value|CONST_STRING
 
 VALAR_MORGHULIS -> Valar Morghulis
 VALAR_DOHAERIS -> Valar Dohaeris
-MAESTER -> Maester:
 DAENERIS -> Daeneris:
 TYRION -> Tyrion:
 CERCEI -> Cercei:
 ARYA -> Arya:
 JON -> Jon:
 YGRITTE -> Ygritte:
-TYPE -> int|double|string
 VAR -> [a-zA-z]+
 ASSIGN_OP -> =
 DIGIT -> 0|([1-9][0-9]*)
