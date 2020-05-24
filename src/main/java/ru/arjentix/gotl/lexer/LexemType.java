@@ -29,7 +29,7 @@ public enum LexemType {
   VAR("[a-zA-z]+", 0),
   // Types for RPN
   FALSE_TRANSITION("", 10),
-  TRANSITION("", 10);
+  UNCONDITIONAL_TRANSITION("", 10);
 
   private Pattern pattern;
   private int priority;
