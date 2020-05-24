@@ -15,18 +15,21 @@ public enum LexemType {
   ASSIGN_OP("=", 2),
   INPUT_OUTPUT_OP("--", 2),
   DIGIT("0|([1-9][0-9]*)", 0),
-  PLUS_MINUS("\\+|\\-", 4),
-  MULT_DIV("\\*|\\/", 3),
+  PLUS_MINUS("\\+|\\-", 3),
+  MULT_DIV("\\*|\\/", 4),
   LOGIC_OP(">|<|==|>=|<=", 2),
   CONST_STRING("\".*\"", 0),
   IF_KW("if", 5),
   WHILE_KW("while", 5),
-  SEMICOLON("\\;", -1),
+  SEMICOLON("\\;", 10),
   OPEN_PARANTH("\\(", 1),
   CLOSE_PARANTH("\\)", 1),
-  OPEN_BRACKET("\\{", 1),
+  OPEN_BRACKET("\\{", -1),
   CLOSE_BRACKET("\\}", 1),
-  VAR("[a-zA-z]+", 0);
+  VAR("[a-zA-z]+", 0),
+  // Types for RPN
+  FALSE_TRANSITION("", 10),
+  TRANSITION("", 10);
 
   private Pattern pattern;
   private int priority;
