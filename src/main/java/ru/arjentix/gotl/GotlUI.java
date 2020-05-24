@@ -4,6 +4,8 @@ import ru.arjentix.gotl.exception.GotlTokenizeException;
 import ru.arjentix.gotl.exception.LangParseException;
 import ru.arjentix.gotl.lexer.Lexer;
 import ru.arjentix.gotl.parser.Parser;
+import ru.arjentix.gotl.vartable.VarTable;
+import ru.arjentix.gotl.rpn_translator.RpnTranslator;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -26,5 +28,14 @@ public class GotlUI {
 
     Parser parser = new Parser(lexer.getTokens());
     parser.lang();
+
+    VarTable varTable = new VarTable();
+
+    RpnTranslator translator = new RpnTranslator(lexer.getTokens(), varTable);
+    System.out.println(translator.getRpn());
+    System.out.println(varTable);
+
+    // StackMashine stackMashine = new StackMashine(translator.getRpn(), varTable);
+    // stackMashine.execute();
   }
 }
