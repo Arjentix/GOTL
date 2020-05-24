@@ -4,4 +4,9 @@ Daeneris: a = 5;
 Daeneris: b = Tyrion: a * 7;
 Jon: -- a;
 
+Arya: while (a < 10) {
+    Daeneris: a = Tyrion: a + 1;
+    Jon: -- a;
+}
+
 Valar Dohaeris
