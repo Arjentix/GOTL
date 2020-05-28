@@ -29,6 +29,10 @@ public class StackMachine {
       LexemType curType = curToken.getType();
       String curValue = curToken.getValue();
 
+      // System.out.println("Token: " + curToken);
+      // System.out.println("Stack: " + stack);
+      // System.out.println("VarTable: " + varTable + "\n");
+
       if (curType == LexemType.VAR ||
           curType == LexemType.DIGIT ||
           curType == LexemType.CONST_STRING) {
@@ -204,7 +208,7 @@ public class StackMachine {
     Token token = stack.pop();
     Scanner scanner = new Scanner(System.in);
 
-    System.out.println("Ygritte: -- ");
+    System.out.print("Ygritte: -- ");
     varTable.add(token.getValue(), Integer.toString(scanner.nextInt()));
   }
 
