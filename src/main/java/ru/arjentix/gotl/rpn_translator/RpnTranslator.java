@@ -41,23 +41,23 @@ public class RpnTranslator {
 
       // Processing JON
       if (curType == LexemType.JON) {
-          wasInput = true;
+          wasInput = false;
           continue;
       }
 
       // Processing YGRITTE
       if (curType == LexemType.YGRITTE) {
-          wasInput = false;
+          wasInput = true;
           continue;
       }
 
       // Processing INPUT_OUTPUT_OP
       if (curType == LexemType.INPUT_OUTPUT_OP) {
           if (wasInput) {
-              rpnList.add(new Token(LexemType.INPUT_OP, "--"));
+              stack.add(new Token(LexemType.INPUT_OP, "--"));
           }
           else {
-              rpnList.add(new Token(LexemType.OUTPUT_OP, "--"));
+              stack.add(new Token(LexemType.OUTPUT_OP, "--"));
           }
           continue;
       }
