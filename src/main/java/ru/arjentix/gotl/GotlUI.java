@@ -25,6 +25,8 @@ public class GotlUI {
 
     String rawInput = Files.readString(Paths.get(args[0]));
 
+    System.out.println("<----- Iterpretation info ----->");
+
     Lexer lexer = new Lexer(rawInput);
     System.out.println("\nTokens: " + lexer.getTokens() + "\n");
 
@@ -38,6 +40,8 @@ public class GotlUI {
     System.out.println("Table of variables: " + varTable + "\n");
 
     StackMachine stackMachine = new StackMachine(translator.getRpn(), varTable);
+
+    System.out.println("<----- Program output ----->");
     stackMachine.execute();
   }
 }
