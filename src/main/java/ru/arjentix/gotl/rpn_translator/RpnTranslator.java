@@ -106,10 +106,11 @@ public class RpnTranslator {
       if (curType == LexemType.CLOSE_BRACKET) {
         // Setting transition variable
         if (!exprWithTransitions.empty()) {
-          varTable.add("_p" + Integer.toString(transitionNumber),
-                        Integer.toString(rpnList.size())
-          );
+          int falseTransitionPointer = rpnList.size();
+
           if (exprWithTransitions.lastElement() == LexemType.WHILE_KW) {
+            falseTransitionPointer += 2; // To skip uncondition transition
+
             String transVar = "_p" +
                               Integer.toString(++transitionNumber);
             rpnList.add(new Token(LexemType.VAR, transVar));
@@ -118,6 +119,10 @@ public class RpnTranslator {
                          Integer.toString(whileKwPositions.pop())
             );
           }
+          // Adding pointer for false transition
+          varTable.add("_p" + Integer.toString(transitionNumber - 1),
+                       Integer.toString(falseTransitionPointer)
+          );
         }
 
         continue;
