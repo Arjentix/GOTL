@@ -2,10 +2,12 @@ package ru.arjentix.gotl;
 
 import ru.arjentix.gotl.exception.GotlTokenizeException;
 import ru.arjentix.gotl.exception.LangParseException;
+import ru.arjentix.gotl.exception.ExecuteException;
 import ru.arjentix.gotl.lexer.Lexer;
 import ru.arjentix.gotl.parser.Parser;
 import ru.arjentix.gotl.vartable.VarTable;
 import ru.arjentix.gotl.rpn_translator.RpnTranslator;
+import ru.arjentix.gotl.stack_machine.StackMachine;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,7 +15,7 @@ import java.nio.file.Paths;
 
 
 public class GotlUI {
-  public static void main(String[] args) throws IOException, GotlTokenizeException, LangParseException {
+  public static void main(String[] args) throws IOException, GotlTokenizeException, LangParseException, ExecuteException {
     System.out.println("Start GOTL UI");
 
     if (args.length < 1) {
@@ -35,7 +37,7 @@ public class GotlUI {
     System.out.println("Reverse Polish Notation: " + translator.getRpn() + "\n");
     System.out.println("Table of variables: " + varTable + "\n");
 
-    // StackMashine stackMashine = new StackMashine(translator.getRpn(), varTable);
-    // stackMashine.execute();
+    StackMachine stackMachine = new StackMachine(translator.getRpn(), varTable);
+    stackMachine.execute();
   }
 }
