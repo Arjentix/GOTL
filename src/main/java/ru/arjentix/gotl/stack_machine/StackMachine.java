@@ -204,6 +204,7 @@ public class StackMachine {
     Token token = stack.pop();
     Scanner scanner = new Scanner(System.in);
 
+    System.out.println("Ygritte: -- ");
     varTable.add(token.getValue(), Integer.toString(scanner.nextInt()));
   }
 
@@ -224,7 +225,7 @@ public class StackMachine {
                                  token.getValue());
     }
 
-    System.out.println(str);
+    System.out.println("Jon: -- " + str);
   }
 
   private void falseTransition() throws ExecuteException {
