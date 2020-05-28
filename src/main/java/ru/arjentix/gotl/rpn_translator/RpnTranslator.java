@@ -96,7 +96,7 @@ public class RpnTranslator {
                         "_p" + Integer.toString(++transitionNumber)
               )
             );
-            rpnList.add(new Token(LexemType.TRANSITION, "!F"));
+            rpnList.add(new Token(LexemType.FALSE_TRANSITION, "!F"));
         }
 
         continue;
@@ -113,7 +113,7 @@ public class RpnTranslator {
             String transVar = "_p" +
                               Integer.toString(++transitionNumber);
             rpnList.add(new Token(LexemType.VAR, transVar));
-            rpnList.add(new Token(LexemType.TRANSITION, "!"));
+            rpnList.add(new Token(LexemType.UNCONDITIONAL_TRANSITION, "!"));
             varTable.add(transVar,
                          Integer.toString(whileKwPositions.pop())
             );

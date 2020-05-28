@@ -28,7 +28,8 @@ public enum LexemType {
   CLOSE_BRACKET("\\}", 1),
   VAR("[a-zA-z]+", 0),
   // Types for RPN
-  TRANSITION("", 10),
+  FALSE_TRANSITION("", 10),
+  UNCONDITIONAL_TRANSITION("", 10),
   INPUT_OP("", 10),
   OUTPUT_OP("", 10);
 
