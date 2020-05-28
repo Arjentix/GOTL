@@ -24,7 +24,7 @@ public class GotlUI {
     String rawInput = Files.readString(Paths.get(args[0]));
 
     Lexer lexer = new Lexer(rawInput);
-    System.out.println(lexer.getTokens());
+    System.out.println("\nTokens: " + lexer.getTokens() + "\n");
 
     Parser parser = new Parser(lexer.getTokens());
     parser.lang();
@@ -32,8 +32,8 @@ public class GotlUI {
     VarTable varTable = new VarTable();
 
     RpnTranslator translator = new RpnTranslator(lexer.getTokens(), varTable);
-    System.out.println(translator.getRpn());
-    System.out.println(varTable);
+    System.out.println("Reverse Polish Notation: " + translator.getRpn() + "\n");
+    System.out.println("Table of variables: " + varTable + "\n");
 
     // StackMashine stackMashine = new StackMashine(translator.getRpn(), varTable);
     // stackMashine.execute();

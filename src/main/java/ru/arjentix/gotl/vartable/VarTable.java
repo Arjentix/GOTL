@@ -1,6 +1,7 @@
 package ru.arjentix.gotl.vartable;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class VarTable {
 
@@ -11,6 +12,10 @@ public class VarTable {
         public VarData(String type, String value) {
             this.type = type;
             this.value = value;
+        }
+
+        public String toString() {
+            return type + ", " + value;
         }
     }
 
@@ -42,6 +47,22 @@ public class VarTable {
 
     public void setValue(String var, String value) {
         hashMap.get(var).value = value;
+    }
+
+    public String toString() {
+        StringBuilder builder = new StringBuilder("{");
+        boolean first = true;
+
+        for (Map.Entry<String, VarData> entry : hashMap.entrySet()) {
+            if (!first) {
+                builder.append(", ");
+            }
+            builder.append("[" + entry.getKey() + " : " + entry.getValue() + "]");
+            first = false;
+        }
+        builder.append("}");
+
+        return builder.toString();
     }
     
 }
