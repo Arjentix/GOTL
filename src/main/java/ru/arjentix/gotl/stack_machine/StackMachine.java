@@ -219,9 +219,12 @@ public class StackMachine {
     if (token.getType() == LexemType.VAR) {
       str = varTable.getValue(token.getValue());
     }
-    else if (token.getType() == LexemType.DIGIT ||
-             token.getType() == LexemType.CONST_STRING) {
+    else if (token.getType() == LexemType.DIGIT) {
       str = token.getValue();
+    }
+    else if (token.getType() == LexemType.CONST_STRING) {
+      str = token.getValue();
+      str = str.substring(1, str.length() - 1);
     }
     else {
       throw new ExecuteException("Expected variable, digit or const string but got " +
