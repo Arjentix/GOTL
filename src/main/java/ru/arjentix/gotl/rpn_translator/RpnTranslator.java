@@ -29,6 +29,7 @@ public class RpnTranslator {
     Stack<LexemType> exprWithTransitions = new Stack<>();
     Stack<Integer> whileKwPositions = new Stack<>();
     int transitionNumber = 0;
+    boolean wasInput = false; // true -- was "Jon" token, false -- was "Ygritte" token
 
     for (Token curToken : tokens) {
       LexemType curType = curToken.getType();
@@ -36,6 +37,29 @@ public class RpnTranslator {
       // Skipping tokens with priority < 0
       if (curType.getPriority() < 0) {
         continue;
+      }
+
+      // Processing JON
+      if (curType == LexemType.JON) {
+          wasInput = true;
+          continue;
+      }
+
+      // Processing YGRITTE
+      if (curType == LexemType.YGRITTE) {
+          wasInput = false;
+          continue;
+      }
+
+      // Processing INPUT_OUTPUT_OP
+      if (curType == LexemType.INPUT_OUTPUT_OP) {
+          if (wasInput) {
+              rpnList.add(new Token(LexemType.INPUT_OP, "--"));
+          }
+          else {
+              rpnList.add(new Token(LexemType.OUTPUT_OP, "--"));
+          }
+          continue;
       }
 
       // Processing variables, digits and strings

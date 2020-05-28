@@ -9,8 +9,8 @@ public enum LexemType {
   DAENERIS("Daeneris\\:", -1),
   TYRION("Tyrion\\:", -1),
   CERCEI("Cercei\\:", -1),
-  ARYA("Arya\\:", -1),
-  JON("Jon\\:", -1),
+  ARYA("Arya\\:", 0),
+  JON("Jon\\:", 0),
   YGRITTE("Ygritte\\:", -1),
   ASSIGN_OP("=", 2),
   INPUT_OUTPUT_OP("--", 2),
@@ -29,7 +29,9 @@ public enum LexemType {
   VAR("[a-zA-z]+", 0),
   // Types for RPN
   FALSE_TRANSITION("", 10),
-  UNCONDITIONAL_TRANSITION("", 10);
+  UNCONDITIONAL_TRANSITION("", 10),
+  INPUT_OP("", 10),
+  OUTPUT_OP("", 10);
 
   private Pattern pattern;
   private int priority;
