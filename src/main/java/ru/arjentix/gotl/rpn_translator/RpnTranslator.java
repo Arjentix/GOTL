@@ -107,6 +107,7 @@ public class RpnTranslator {
         // Setting transition variable
         if (!exprWithTransitions.empty()) {
           int falseTransitionPointer = rpnList.size();
+          int oldTransitionNumber = transitionNumber;
 
           if (exprWithTransitions.lastElement() == LexemType.WHILE_KW) {
             falseTransitionPointer += 2; // To skip uncondition transition
@@ -120,7 +121,7 @@ public class RpnTranslator {
             );
           }
           // Adding pointer for false transition
-          varTable.add("_p" + Integer.toString(transitionNumber - 1),
+          varTable.add("_p" + Integer.toString(oldTransitionNumber),
                        Integer.toString(falseTransitionPointer)
           );
         }
