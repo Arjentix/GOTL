@@ -9,4 +9,10 @@ Arya: while (a < 10) {
     Jon: -- a;
 }
 
+Ygritte: -- b;
+
+Cercei: if (b > a) {
+    Jon: -- "Your number is greater than my";
+}
+
 Valar Dohaeris
