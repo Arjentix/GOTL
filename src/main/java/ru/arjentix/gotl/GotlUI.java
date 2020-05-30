@@ -6,12 +6,16 @@ import ru.arjentix.gotl.exception.ExecuteException;
 import ru.arjentix.gotl.lexer.Lexer;
 import ru.arjentix.gotl.parser.Parser;
 import ru.arjentix.gotl.vartable.VarTable;
+import ru.arjentix.gotl.type_table.*;
 import ru.arjentix.gotl.rpn_translator.RpnTranslator;
 import ru.arjentix.gotl.stack_machine.StackMachine;
+import ru.arjentix.gotl.list.List;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 
 public class GotlUI {
@@ -34,6 +38,45 @@ public class GotlUI {
     parser.lang();
 
     VarTable varTable = new VarTable();
+
+    TypeTable typeTable = new TypeTable();
+
+    // List type initialization
+    typeTable.put("list", new ArrayList<Method>(Arrays.asList(new Method[] {
+        new Method("add", new ArrayList<String>(){{add("int");}}, "", (arg0, arg1) -> {
+            List list = (List) arg0;
+            list.add((int)arg1);
+
+            return null;
+        }),
+        new Method("insert", new ArrayList<String>(){{add("int"); add("int");}}, "", (arg0, arg1) -> {
+            List list = (List) arg0;
+            ArrayList<Integer> argsList = (ArrayList<Integer>) arg1;
+            int realArg0 = argsList.get(0);
+            int realArg1 = argsList.get(1);
+            list.insert(realArg0, realArg1);
+
+            return null;
+        }),
+        new Method("get", new ArrayList<String>(){{add("int");}}, "int", (arg0, arg1) -> {
+            List list = (List) arg0;
+            return list.get((int)arg1);
+        }),
+        new Method("remove", new ArrayList<String>(){{add("int");}}, "", (arg0, arg1) -> {
+            List list = (List) arg0;
+            list.remove((int)arg1);
+
+            return null;
+        }),
+        new Method("size", new ArrayList<String>(), "int", (arg0, arg1) -> {
+            List list = (List) arg0;
+            return list.size();
+        }),
+        new Method("isEmpty", new ArrayList<String>(), "int", (arg0, arg1) -> {
+            List list = (List) arg0;
+            return list.isEmpty() ? 1 : 0;
+        })
+    })));
 
     RpnTranslator translator = new RpnTranslator(lexer.getTokens(), varTable);
     System.out.println("Reverse Polish Notation: " + translator.getRpn() + "\n");
