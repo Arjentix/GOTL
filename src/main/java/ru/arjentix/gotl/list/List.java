@@ -39,7 +39,7 @@ public class List {
     ++size;
   }
 
-  public void add(int index, int value) {
+  public void insert(int index, int value) {
     Node node = find(index);
     Node newNode = new Node(value, node, node.next);
     
