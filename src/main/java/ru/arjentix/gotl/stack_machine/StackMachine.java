@@ -40,6 +40,17 @@ public class StackMachine {
       }
       else {
         switch (curType) {
+        case TYPE:
+          if (curValue.equals("int")) {
+            intFoo();
+          }
+          if (curValue.equals("str")) {
+            str();
+          }
+          if (curValue.equals("list")) {
+            list();
+          }
+          break;
         case ASSIGN_OP:
           assign();
           break;
@@ -102,17 +113,45 @@ public class StackMachine {
       throw new ExecuteException("Expected variable or digit, but got " +
                                  token.getType() + ": " + token.getValue());
     }
+  }
 
+  private void checkForVar(Token token) throws ExecuteException {
+    if (token.getType() != LexemType.VAR) {
+      throw new ExecuteException("Expected variable, but got " +
+                                 token.getType() + ": " +
+                                 token.getValue());
+    }
+  }
+
+  private void intFoo() throws ExecuteException {
+    Token variable = stack.pop();
+
+    checkForVar(variable);
+
+    varTable.add(variable.getValue(), "int", "0");
+  }
+
+  private void str() throws ExecuteException {
+    Token variable = stack.pop();
+
+    checkForVar(variable);
+
+    varTable.add(variable.getValue(), "str", "");
+  }
+
+  private void list() throws ExecuteException {
+    Token variable = stack.pop();
+
+    checkForVar(variable);
+
+    varTable.add(variable.getValue(), "list", "");
   }
 
   private void assign() throws ExecuteException {
     Token value = stack.pop();
     Token variable = stack.pop();
-    if (variable.getType() != LexemType.VAR) {
-      throw new ExecuteException("Expected variable, but got " +
-                                 variable.getType() + ": " +
-                                 variable.getValue());
-    }
+
+    checkForVar(variable);
     checkForVarOfDigit(value);
 
     varTable.add(variable.getValue(), value.getValue());
@@ -239,11 +278,7 @@ public class StackMachine {
     Token pointer = stack.pop();
     Token condition = stack.pop();
 
-    if (pointer.getType() != LexemType.VAR) {
-      throw new ExecuteException("Expected variable, but got " +
-                                 pointer.getType() + ": " +
-                                 pointer.getValue());
-    }
+    checkForVar(pointer);
 
     int conditionValue = tokenToInt(condition);
     if (conditionValue <= 0) {

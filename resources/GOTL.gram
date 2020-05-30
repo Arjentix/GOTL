@@ -2,7 +2,7 @@ lang -> VALAR_MORGHULIS expr+ VALAR_DOHAERIS
 expr -> assign_expr|cond_expr|while_expr|input_expr|output_expr
 assign_expr -> DAENERIS VAR ASSIGN_OP value_expr SEMICOLON
 value_expr -> value|arithm_expr
-value -> VAR|DIGIT
+value -> TYPE|VAR|DIGIT|CONST_STRING
 arithm_expr -> TYRION value (op value)+
 op -> PLUS_MINUS | MULT_DIV
 cond_expr -> CERSEI cond_head body
@@ -24,6 +24,7 @@ CERCEI -> Cercei:
 ARYA -> Arya:
 JON -> Jon:
 YGRITTE -> Ygritte:
+TYPE -> int|str|list
 VAR -> [a-zA-z]+
 ASSIGN_OP -> =
 DIGIT -> 0|([1-9][0-9]*)

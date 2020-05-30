@@ -105,10 +105,16 @@ public class Parser {
 
   private ParseResult value() {
     List<Function<Object, ParseResult>> expressions = new ArrayList<>();
+    expressions.add((arg0) -> {return type();});
     expressions.add((arg0) -> {return var();});
     expressions.add((arg0) -> {return digit();});
+    expressions.add((arg0) -> {return constString();});
 
     return orOperation(expressions);
+  }
+
+  private ParseResult type() {
+    return matchToken(match(), LexemType.TYPE);
   }
 
   private ParseResult digit() {
