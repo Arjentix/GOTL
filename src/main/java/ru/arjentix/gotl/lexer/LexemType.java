@@ -19,7 +19,7 @@ public enum LexemType {
   PLUS_MINUS("\\+|\\-", 3),
   MULT_DIV("\\*|\\/", 4),
   LOGIC_OP(">|<|==|>=|<=", 2),
-  CONST_STRING("\".*\"", 0),
+  CONST_STRING("\"[^\"]*\"", 0),
   IF_KW("if", 5),
   WHILE_KW("while", 5),
   SEMICOLON("\\;", 10),

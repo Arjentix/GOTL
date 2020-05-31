@@ -15,12 +15,14 @@ public class StackMachine {
   private VarTable varTable;
   private int pos;
   private Stack<Token> stack;
+  private boolean wasOutput;
 
   public StackMachine(List<Token> rpnList, VarTable varTable) {
     this.rpnList = rpnList;
     this.varTable = varTable;
     pos = 0;
     stack = new Stack<>();
+    wasOutput = false;
   }
 
   public void execute() throws ExecuteException {
@@ -39,6 +41,9 @@ public class StackMachine {
         stack.push(curToken);
       }
       else {
+        if (curType != LexemType.OUTPUT_OP) {
+          wasOutput = false;
+        }
         switch (curType) {
         case TYPE:
           if (curValue.equals("int")) {
@@ -271,7 +276,18 @@ public class StackMachine {
                                  token.getValue());
     }
 
-    System.out.println("Jon: -- " + str);
+    if (wasOutput) {
+      System.out.print(str);
+    }
+    else {
+      System.out.print("Jon: -- " + str);
+    }
+    if ((pos + 2 >= rpnList.size()) ||
+        ((pos + 2 < rpnList.size()) && rpnList.get(pos + 2).getType() != LexemType.OUTPUT_OP)) {
+      System.out.println();
+    }
+
+    wasOutput = true;
   }
 
   private void falseTransition() throws ExecuteException {

@@ -53,13 +53,14 @@ public class RpnTranslator {
 
       // Processing INPUT_OUTPUT_OP
       if (curType == LexemType.INPUT_OUTPUT_OP) {
-          if (wasInput) {
-              stack.add(new Token(LexemType.INPUT_OP, "--"));
-          }
-          else {
-              stack.add(new Token(LexemType.OUTPUT_OP, "--"));
-          }
-          continue;
+        fromStackToList(stack, rpnList);
+        if (wasInput) {
+          stack.add(new Token(LexemType.INPUT_OP, "--"));
+        }
+        else {
+          stack.add(new Token(LexemType.OUTPUT_OP, "--"));
+        }
+        continue;
       }
 
       // Processing variables, digits and strings
