@@ -227,7 +227,7 @@ public class Parser {
   }
 
   private ParseResult openParanth() {
-    return matchToken(match(), LexemType.OPEN_PARANTH);
+    return matchToken(match(), LexemType.OPEN_PARENTH);
   }
 
   private ParseResult logicalExpr() {
@@ -244,7 +244,7 @@ public class Parser {
   }
 
   private ParseResult closeParanth() {
-    return matchToken(match(), LexemType.CLOSE_PARANTH);
+    return matchToken(match(), LexemType.CLOSE_PARENTH);
   }
 
   private ParseResult body() {

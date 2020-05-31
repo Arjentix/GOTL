@@ -71,7 +71,7 @@ public class RpnTranslator {
       }
 
       // Processing open paranth
-      if (curType == LexemType.OPEN_PARANTH) {
+      if (curType == LexemType.OPEN_PARENTH) {
         stack.push(curToken);
         continue;
       }
@@ -83,9 +83,9 @@ public class RpnTranslator {
       }
 
       // Processing close paranth
-      if (curType == LexemType.CLOSE_PARANTH) {
+      if (curType == LexemType.CLOSE_PARENTH) {
         Token top = stack.pop();
-        while (top.getType() != LexemType.OPEN_PARANTH) {
+        while (top.getType() != LexemType.OPEN_PARENTH) {
           rpnList.add(top);
           top = stack.pop();
         }
