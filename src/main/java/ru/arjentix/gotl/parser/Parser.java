@@ -64,6 +64,7 @@ public class Parser {
   private ParseResult expr() {
     List<Function<Object, ParseResult>> expressions = new ArrayList<>();
     expressions.add((arg) -> {return assignExpr();});
+    // expressions.add((arg) -> {return methodCall();});
     expressions.add((arg) -> {return condExpr();});
     expressions.add((arg) -> {return whileExpr();});
     expressions.add((arg) -> {return inputExpr();});
@@ -95,10 +96,36 @@ public class Parser {
     return matchToken(match(), LexemType.ASSIGN_OP);
   }
 
+//   private ParseResult methodCall() {
+//     List<Function<Object, ParseResult>> expressions = new ArrayList<>();
+//     expressions.add((arg0) -> {return var();});
+//     expressions.add((arg0) -> {return dot();});
+//     expressions.add((arg0) -> {return method();});
+//     expressions.add((arg0) -> {return openParanth();});
+//     expressions.add((arg0) -> {return questionMarkOperation(argList());});
+//     expressions.add((arg0) -> {return closeParanth();});
+
+//     return andOperation(expressions);
+//   }
+
+//   private ParseResult argList() {
+//     List<Function<Object, ParseResult>> expressions = new ArrayList<>();
+//     expressions.add((arg0) -> {return valueExpr();});
+//     expressions.add((arg0) -> {
+//         List<Function<Object, ParseResult>> starExpressions = new ArrayList<>();
+//         starExpressions.add((arg1) -> {return comma();});
+//         starExpressions.add((arg1) -> {return valueExpr();});
+//         return starOperation(starExpressions);
+//     });
+
+//     return andOperation(expressions);
+//   }
+
   private ParseResult valueExpr() {
     List<Function<Object, ParseResult>> expressions = new ArrayList<>();
     expressions.add((arg0) -> {return value();});
     expressions.add((arg0) -> {return arithmExpr();});
+    // expressions.add((arg0) -> {return methodCall();});
 
     return orOperation(expressions);
   }
@@ -124,30 +151,40 @@ public class Parser {
   private ParseResult arithmExpr() {
     List<Function<Object, ParseResult>> expressions = new ArrayList<>();
     expressions.add((arg0) -> {return tyrion();});
-    expressions.add((arg0) -> {return value();});
-    expressions.add((arg0) -> {
-      List<Function<Object, ParseResult>> and_expressions = new ArrayList<>();
-      and_expressions.add((arg) -> {return op();});
-      and_expressions.add((arg) -> {return value();});
-      return plusOperation((arg) -> andOperation(and_expressions));
-    });
+    expressions.add((arg0) -> {return arithmBody();});
 
     return andOperation(expressions);
   }
 
+  private ParseResult arithmBody() {
+    List<Function<Object, ParseResult>> expressions = new ArrayList<>();
+    expressions.add((arg0) -> {return questionMarkOperation((arg1) -> {return openParanth();});});
+    expressions.add((arg0) -> {return valueExpr();});
+    expressions.add((arg0) -> {
+      List<Function<Object, ParseResult>> andExpressions = new ArrayList<>();
+      andExpressions.add((arg) -> {return op();});
+      andExpressions.add((arg) -> {return arithmBody();});
+      return starOperation((arg) -> {return andOperation(andExpressions);});
+    });
+    expressions.add((arg0) -> {return questionMarkOperation((arg1) -> {return closeParanth();});});
+
+    return andOperation(expressions);
+  }
+  
+
   private ParseResult op() {
     List<Function<Object, ParseResult>> expressions = new ArrayList<>();
-    expressions.add((arg0) -> {return plus_minus();});
-    expressions.add((arg0) -> {return mult_div();});
+    expressions.add((arg0) -> {return plusMinus();});
+    expressions.add((arg0) -> {return multDiv();});
 
     return orOperation(expressions);
   }
 
-  private ParseResult plus_minus() {
+  private ParseResult plusMinus() {
       return matchToken(match(), LexemType.PLUS_MINUS);
   }
 
-  private ParseResult mult_div() {
+  private ParseResult multDiv() {
       return matchToken(match(), LexemType.MULT_DIV);
   }
 
@@ -370,6 +407,21 @@ public class Parser {
     return results.get(results.size() - 1);
   }
 
+  private ParseResult starOperation(Function<Object, ParseResult> expression) {
+    ParseResult curRes = new ParseResult();
+    int depthSum = 0;
+
+    while(curRes.success) {
+      curRes = expression.apply(null);
+      depthSum += curRes.depth;
+    }
+
+    back(curRes.depth);
+    curRes.depth = depthSum - curRes.depth;
+    curRes.success = true;
+    return curRes;
+  }
+
   private ParseResult plusOperation(Function<Object, ParseResult> expression) {
     ParseResult cur_res = new ParseResult();
     int depth_sum = 0;
@@ -392,16 +444,22 @@ public class Parser {
     return cur_res;
   }
 
+  private ParseResult questionMarkOperation(Function<Object, ParseResult> expression) {
+    ParseResult curRes = expression.apply(null);
+    if (!curRes.success) {
+        back(curRes.depth);
+    }
+
+    curRes.success = true;
+    return curRes;
+  }
+
   private Token match() {
-    // Token token = tokens.get(++pos);
-    // System.out.println("Current token = " + token + " on pos = " + pos);
-    // return token;
     return tokens.get(++pos);
   }
 
   private void back(int step) {
     pos -= step;
-    // System.out.println("back::pos = " + pos);
   }
 
   private ParseResult matchToken(Token token, LexemType type) {

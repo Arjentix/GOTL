@@ -1,8 +1,8 @@
 Valar Morghulis
 
 Daeneris: a = 5;
-Daeneris: b = Tyrion: a * 7;
-Jon: -- a;
+Daeneris: b = Tyrion: (1+2*(3+2));
+Jon: -- "a = " -- a -- ", b = " -- b;
 
 Arya: while (a < 10) {
     Daeneris: a = Tyrion: a + 1;

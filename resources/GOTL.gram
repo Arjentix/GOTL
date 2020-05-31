@@ -1,9 +1,12 @@
 lang -> VALAR_MORGHULIS expr+ VALAR_DOHAERIS
-expr -> assign_expr|cond_expr|while_expr|input_expr|output_expr
+expr -> assign_expr|method_call|cond_expr|while_expr|input_expr|output_expr
 assign_expr -> DAENERIS VAR ASSIGN_OP value_expr SEMICOLON
-value_expr -> value|arithm_expr
+value_expr -> value|arithm_expr|method_call
 value -> TYPE|VAR|DIGIT|CONST_STRING
-arithm_expr -> TYRION value (op value)+
+method_call -> VAR DOT METHOD OPEN_PARANTH arg_list? CLOSE_PARANTH SEMICOLON
+arg_list -> value_expr (COMMA value_expr)*
+arithm_expr -> TYRION arithm_body
+arithm_body -> OPEN_PARANTH? value_expr (op arithm_body)* CLOSE_PARANTH?
 op -> PLUS_MINUS | MULT_DIV
 cond_expr -> CERSEI cond_head body
 cond_head -> IF_KW logical_head
@@ -31,7 +34,7 @@ DIGIT -> 0|([1-9][0-9]*)
 PLUS_MINUS -> +|-
 MULT_DIV -> *|/
 LOGIC_OP -> >|<|==|>=|<=
-CONST_STRING -> ".*"
+CONST_STRING -> "[^"]*"
 IF_KW = if
 WHILE_KW = while
 OPEN_PARANTH -> (
