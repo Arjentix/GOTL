@@ -5,14 +5,34 @@ Daeneris: b = Tyrion: (1+2*(3+2));
 Jon: -- "a = " -- a -- ", b = " -- b;
 
 Arya: while (a < 10) {
-    Daeneris: a = Tyrion: a + 1;
-    Jon: -- a;
+  Daeneris: a = Tyrion: a + 1;
+  Jon: -- a;
 }
 
 Ygritte: -- b;
 
 Cercei: if (b > a) {
-    Jon: -- "Your number is greater than my";
+  Jon: -- "Your number is greater than my";
 }
+
+
+Daeneris: l = list;
+Daeneris: i = 0;
+Jon: -- "Tell me size:";
+Ygritte: -- size;
+
+Arya: while (i < size) {
+  Daeneris: i = Tyrion: i + 1;
+  Jon: -- "Tell me value #" -- i;
+  Ygritte: -- value;
+  l.add(value);
+}
+
+Jon: -- "Your list is: " -- l;
+
+Jon: -- "Which element do you want?";
+Ygritte: -- index;
+Daeneris: value = l.get(index);;
+Jon: -- "Here it is: " -- value;
 
 Valar Dohaeris
