@@ -64,7 +64,7 @@ public class Parser {
   private ParseResult expr() {
     List<Function<Object, ParseResult>> expressions = new ArrayList<>();
     expressions.add((arg) -> {return assignExpr();});
-    // expressions.add((arg) -> {return methodCall();});
+    expressions.add((arg) -> {return methodCall();});
     expressions.add((arg) -> {return condExpr();});
     expressions.add((arg) -> {return whileExpr();});
     expressions.add((arg) -> {return inputExpr();});
@@ -78,10 +78,19 @@ public class Parser {
     expressions.add((arg0) -> {return daeneris();});
     expressions.add((arg0) -> {return var();});
     expressions.add((arg0) -> {return assignOp();});
-    expressions.add((arg0) -> {return valueExpr();});
+    expressions.add((arg0) -> {return assignValue();});
     expressions.add((arg0) -> {return semicolon();});
 
     return andOperation(expressions);
+  }
+
+  private ParseResult assignValue() {
+    List<Function<Object, ParseResult>> expressions = new ArrayList<>();
+    expressions.add((arg0) -> {return valueExpr();});
+    expressions.add((arg0) -> {return type();});
+    expressions.add((arg0) -> {return constString();});
+
+    return orOperation(expressions);
   }
 
   private ParseResult var() {
@@ -96,46 +105,52 @@ public class Parser {
     return matchToken(match(), LexemType.ASSIGN_OP);
   }
 
-//   private ParseResult methodCall() {
-//     List<Function<Object, ParseResult>> expressions = new ArrayList<>();
-//     expressions.add((arg0) -> {return var();});
-//     expressions.add((arg0) -> {return dot();});
-//     expressions.add((arg0) -> {return method();});
-//     expressions.add((arg0) -> {return openParanth();});
-//     expressions.add((arg0) -> {return questionMarkOperation(argList());});
-//     expressions.add((arg0) -> {return closeParanth();});
+  private ParseResult methodCall() {
+    List<Function<Object, ParseResult>> expressions = new ArrayList<>();
+    expressions.add((arg0) -> {return var();});
+    expressions.add((arg0) -> {return dot();});
+    expressions.add((arg0) -> {return var();});
+    expressions.add((arg0) -> {return openParanth();});
+    expressions.add((arg0) -> {return questionMarkOperation((arg1) -> {return argList();});});
+    expressions.add((arg0) -> {return closeParanth();});
 
-//     return andOperation(expressions);
-//   }
+    return andOperation(expressions);
+  }
 
-//   private ParseResult argList() {
-//     List<Function<Object, ParseResult>> expressions = new ArrayList<>();
-//     expressions.add((arg0) -> {return valueExpr();});
-//     expressions.add((arg0) -> {
-//         List<Function<Object, ParseResult>> starExpressions = new ArrayList<>();
-//         starExpressions.add((arg1) -> {return comma();});
-//         starExpressions.add((arg1) -> {return valueExpr();});
-//         return starOperation(starExpressions);
-//     });
+  private ParseResult dot() {
+    return matchToken(match(), LexemType.DOT);
+  }
 
-//     return andOperation(expressions);
-//   }
+  private ParseResult argList() {
+    List<Function<Object, ParseResult>> expressions = new ArrayList<>();
+    expressions.add((arg0) -> {return valueExpr();});
+    expressions.add((arg0) -> {
+      List<Function<Object, ParseResult>> starExpressions = new ArrayList<>();
+      starExpressions.add((arg1) -> {return comma();});
+      starExpressions.add((arg1) -> {return valueExpr();});
+      return starOperation((arg1) -> {return andOperation(starExpressions);});
+    });
+
+    return andOperation(expressions);
+  }
+
+  private ParseResult comma() {
+    return matchToken(match(), LexemType.COMMA);
+  }
 
   private ParseResult valueExpr() {
     List<Function<Object, ParseResult>> expressions = new ArrayList<>();
     expressions.add((arg0) -> {return value();});
     expressions.add((arg0) -> {return arithmExpr();});
-    // expressions.add((arg0) -> {return methodCall();});
+    expressions.add((arg0) -> {return methodCall();});
 
     return orOperation(expressions);
   }
 
   private ParseResult value() {
     List<Function<Object, ParseResult>> expressions = new ArrayList<>();
-    expressions.add((arg0) -> {return type();});
     expressions.add((arg0) -> {return var();});
     expressions.add((arg0) -> {return digit();});
-    expressions.add((arg0) -> {return constString();});
 
     return orOperation(expressions);
   }
@@ -337,7 +352,7 @@ public class Parser {
 
   private ParseResult outputValue() {
     List<Function<Object, ParseResult>> expressions = new ArrayList<>();
-    expressions.add((arg0) -> {return value();});
+    expressions.add((arg0) -> {return valueExpr();});
     expressions.add((arg0) -> {return constString();});
 
     return orOperation(expressions);
