@@ -1,9 +1,10 @@
 lang -> VALAR_MORGHULIS expr+ VALAR_DOHAERIS
 expr -> assign_expr|method_call|cond_expr|while_expr|input_expr|output_expr
-assign_expr -> DAENERIS VAR ASSIGN_OP value_expr SEMICOLON
+assign_expr -> DAENERIS VAR ASSIGN_OP assign_value SEMICOLON
+assign_value -> value_expr|TYPE|CONST_STRING
 value_expr -> value|arithm_expr|method_call
-value -> TYPE|VAR|DIGIT|CONST_STRING
-method_call -> VAR DOT METHOD OPEN_PARANTH arg_list? CLOSE_PARANTH SEMICOLON
+value -> VAR|DIGIT
+method_call -> VAR DOT VAR OPEN_PARANTH arg_list? CLOSE_PARANTH SEMICOLON
 arg_list -> value_expr (COMMA value_expr)*
 arithm_expr -> TYRION arithm_body
 arithm_body -> OPEN_PARANTH? value_expr (op arithm_body)* CLOSE_PARANTH?
@@ -17,7 +18,7 @@ while_expr -> ARYA while_head body
 while_head -> WHILE_KW logical_head
 input_expr -> YGRITTE (INPUT_OUTPUT_OP VAR)+ SEMICOLON
 output_expr -> JON (INPUT_OUTPUT_OP output_value)+ SEMICOLON
-output_value -> value|CONST_STRING
+output_value -> value_expr|CONST_STRING
 
 VALAR_MORGHULIS -> Valar Morghulis
 VALAR_DOHAERIS -> Valar Dohaeris
@@ -27,6 +28,8 @@ CERCEI -> Cercei:
 ARYA -> Arya:
 JON -> Jon:
 YGRITTE -> Ygritte:
+DOT -> \.
+COMMA -> ,
 TYPE -> int|str|list
 VAR -> [a-zA-z]+
 ASSIGN_OP -> =
