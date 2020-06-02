@@ -12,6 +12,8 @@ public enum LexemType {
   ARYA("Arya\\:", -1),
   JON("Jon\\:", 0),
   YGRITTE("Ygritte\\:", 0),
+  DOT("\\.", -1),
+  COMMA(",", -1),
   TYPE("int|str|list", 2),
   ASSIGN_OP("=", 2),
   INPUT_OUTPUT_OP("--", 2),
