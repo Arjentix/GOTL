@@ -4,7 +4,7 @@ assign_expr -> DAENERIS VAR ASSIGN_OP assign_value SEMICOLON
 assign_value -> value_expr|TYPE|CONST_STRING
 value_expr -> value|arithm_expr|method_call
 value -> VAR|DIGIT
-method_call -> VAR DOT VAR OPEN_PARANTH arg_list? CLOSE_PARANTH SEMICOLON
+method_call -> VAR METHOD OPEN_PARANTH arg_list? CLOSE_PARANTH SEMICOLON
 arg_list -> value_expr (COMMA value_expr)*
 arithm_expr -> TYRION arithm_body
 arithm_body -> OPEN_PARANTH? value_expr (op arithm_body)* CLOSE_PARANTH?
@@ -28,9 +28,9 @@ CERCEI -> Cercei:
 ARYA -> Arya:
 JON -> Jon:
 YGRITTE -> Ygritte:
-DOT -> \.
 COMMA -> ,
 TYPE -> int|str|list
+METHOD -> \.[a-zA-z]+
 VAR -> [a-zA-z]+
 ASSIGN_OP -> =
 DIGIT -> 0|([1-9][0-9]*)

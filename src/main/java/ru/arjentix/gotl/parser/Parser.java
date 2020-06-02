@@ -108,8 +108,7 @@ public class Parser {
   private ParseResult methodCall() {
     List<Function<Object, ParseResult>> expressions = new ArrayList<>();
     expressions.add((arg0) -> {return var();});
-    expressions.add((arg0) -> {return dot();});
-    expressions.add((arg0) -> {return var();});
+    expressions.add((arg0) -> {return method();});
     expressions.add((arg0) -> {return openParanth();});
     expressions.add((arg0) -> {return questionMarkOperation((arg1) -> {return argList();});});
     expressions.add((arg0) -> {return closeParanth();});
@@ -117,8 +116,8 @@ public class Parser {
     return andOperation(expressions);
   }
 
-  private ParseResult dot() {
-    return matchToken(match(), LexemType.DOT);
+  private ParseResult method() {
+    return matchToken(match(), LexemType.METHOD);
   }
 
   private ParseResult argList() {

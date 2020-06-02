@@ -12,7 +12,6 @@ public enum LexemType {
   ARYA("Arya\\:", -1),
   JON("Jon\\:", 0),
   YGRITTE("Ygritte\\:", 0),
-  DOT("\\.", -1),
   COMMA(",", -1),
   TYPE("int|str|list", 2),
   ASSIGN_OP("=", 2),
@@ -29,6 +28,7 @@ public enum LexemType {
   CLOSE_PARENTH("\\)", 1),
   OPEN_BRACKET("\\{", -1),
   CLOSE_BRACKET("\\}", 1),
+  METHOD("\\.[a-zA-z]+", 0),
   VAR("[a-zA-z]+", 0),
   // Types for RPN
   FALSE_TRANSITION("", 10),
