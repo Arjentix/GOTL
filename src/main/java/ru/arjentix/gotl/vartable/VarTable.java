@@ -7,9 +7,9 @@ public class VarTable {
 
   private class VarData {
     public String type;
-    public String value;
+    public Object value;
 
-    public VarData(String type, String value) {
+    public VarData(String type, Object value) {
         this.type = type;
         this.value = value;
     }
@@ -29,15 +29,19 @@ public class VarTable {
     hashMap.put(var, new VarData("int", value));
   }
 
-  public void add(String var, String type, String value) {
+  public void add(String var, String type, Object value) {
     hashMap.put(var, new VarData(type, value));
+  }
+
+  public boolean contains(String var) {
+    return hashMap.containsKey(var);
   }
 
   public String getType(String var) {
     return hashMap.get(var).type;
   }
 
-  public String getValue(String var) {
+  public Object getValue(String var) {
     return hashMap.get(var).value;
   }
 
@@ -45,7 +49,7 @@ public class VarTable {
     hashMap.get(var).type = type;
   }
 
-  public void setValue(String var, String value) {
+  public void setValue(String var, Object value) {
     hashMap.get(var).value = value;
   }
 

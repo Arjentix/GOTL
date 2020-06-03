@@ -25,6 +25,10 @@ public class Method {
         return paramTypes;
     }
 
+    public String getReturnType() {
+      return returnType;
+    }
+
     public Object invoke(Object arg0, Object arg1) {
         return implementation.apply(arg0, arg1);
     }

@@ -3,8 +3,13 @@ package ru.arjentix.gotl.stack_machine;
 import ru.arjentix.gotl.lexer.LexemType;
 import ru.arjentix.gotl.token.Token;
 import ru.arjentix.gotl.vartable.VarTable;
+import ru.arjentix.gotl.type_table.Method;
+import ru.arjentix.gotl.type_table.TypeTable;
 import ru.arjentix.gotl.exception.ExecuteException;
+import ru.arjentix.gotl.list.GotlList;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
@@ -13,13 +18,15 @@ public class StackMachine {
 
   private List<Token> rpnList;
   private VarTable varTable;
+  private TypeTable typeTable;
   private int pos;
   private Stack<Token> stack;
   private boolean wasOutput;
 
-  public StackMachine(List<Token> rpnList, VarTable varTable) {
+  public StackMachine(List<Token> rpnList, VarTable varTable, TypeTable typeTable) {
     this.rpnList = rpnList;
     this.varTable = varTable;
+    this.typeTable = typeTable;
     pos = 0;
     stack = new Stack<>();
     wasOutput = false;
@@ -37,7 +44,8 @@ public class StackMachine {
 
       if (curType == LexemType.VAR ||
           curType == LexemType.DIGIT ||
-          curType == LexemType.CONST_STRING) {
+          curType == LexemType.CONST_STRING ||
+          curType == LexemType.TYPE) {
         stack.push(curToken);
       }
       else {
@@ -45,19 +53,11 @@ public class StackMachine {
           wasOutput = false;
         }
         switch (curType) {
-        case TYPE:
-          if (curValue.equals("int")) {
-            intFoo();
-          }
-          if (curValue.equals("str")) {
-            str();
-          }
-          if (curValue.equals("list")) {
-            list();
-          }
-          break;
         case ASSIGN_OP:
           assign();
+          break;
+        case METHOD:
+          method(curValue);
           break;
         case PLUS_MINUS:
           if (curValue.equals("+")) {
@@ -128,38 +128,118 @@ public class StackMachine {
     }
   }
 
-  private void intFoo() throws ExecuteException {
-    Token variable = stack.pop();
-
-    checkForVar(variable);
-
-    varTable.add(variable.getValue(), "int", "0");
-  }
-
-  private void str() throws ExecuteException {
-    Token variable = stack.pop();
-
-    checkForVar(variable);
-
-    varTable.add(variable.getValue(), "str", "");
-  }
-
-  private void list() throws ExecuteException {
-    Token variable = stack.pop();
-
-    checkForVar(variable);
-
-    varTable.add(variable.getValue(), "list", "");
-  }
-
   private void assign() throws ExecuteException {
     Token value = stack.pop();
     Token variable = stack.pop();
 
-    checkForVar(variable);
-    checkForVarOfDigit(value);
+    Object realValue = null;
+    String type = null;
 
-    varTable.add(variable.getValue(), value.getValue());
+    checkForVar(variable);
+
+    if (value.getType() == LexemType.VAR) {
+      type = varTable.getType(variable.getValue());
+      realValue = varTable.getValue(variable.getValue());
+    }
+    else if (value.getType() == LexemType.TYPE) {
+      if (value.getValue().equals("int")) {
+        realValue = (Integer) 0;
+      }
+      if (value.getValue().equals("str")) {
+        realValue = (String) "";
+      }
+      if (value.getValue().equals("list")) {
+        realValue = new GotlList();
+      }
+      type = value.getValue(); 
+    }
+    else if (value.getType() == LexemType.DIGIT) {
+      type = "int";
+      realValue = Integer.parseInt(value.getValue());
+    }
+    else if (value.getType() == LexemType.CONST_STRING) {
+      type = "str";
+      realValue = value.getValue();
+    }
+
+
+    varTable.add(variable.getValue(), type, realValue);
+  }
+
+  private Method findMethod(String name, List<Method> methods) {
+    Method m = null;
+    for (Method methodItem : methods) {
+      if (methodItem.getName().equals(name)) {
+        m = methodItem;
+        break;
+      }
+    }
+
+    return m;
+  }
+
+  private void wrongArgType(String name, String varType, String paramType,
+                            String argType) throws ExecuteException {
+    throw new ExecuteException("Method " + name + " of type " + varType +
+                               " accepts argument of type " + paramType +
+                               ", but got " + argType);
+  }
+
+  private void method(String name) throws ExecuteException {
+    Token variable = stack.pop();
+    checkForVar(variable);
+    String varType = varTable.getType(variable.getValue());
+
+    Method realMethod = findMethod(name, typeTable.get(varType));
+
+    List<Object> args = new ArrayList<>();
+    List<String> paramTypes = realMethod.getParamTypes(); 
+    Collections.reverse(paramTypes);
+
+    for (String paramType : paramTypes) {
+      Token arg = stack.pop();
+      String argType = null;
+      String argValue = null;
+      Object value = null;
+
+      if (arg.getType() == LexemType.VAR) {
+        argType = varTable.getType(arg.getValue());
+        value = varTable.getValue(arg.getValue());
+      }
+      else {
+        if (arg.getType() == LexemType.DIGIT) {
+          argType = "int";
+          argValue = arg.getValue();
+        }
+        else if (arg.getType() == LexemType.CONST_STRING) {
+          argType = "str";
+          argValue = arg.getValue();
+        }
+
+        if (paramType.equals("int")) {
+          value = Integer.parseInt(argValue);
+        }
+        if (paramType.equals("str")) {
+          value = argValue;
+        }
+      }
+
+      if (!argType.equals(paramType)) {
+        wrongArgType(name, varType, paramType, argType);
+      }
+
+      args.add(value);
+    }
+
+    Object res = realMethod.invoke(varTable.getValue(variable.getValue()), args);
+
+    String returnType = realMethod.getReturnType();
+    if (returnType.equals("int")) {
+      stack.push(new Token(LexemType.DIGIT, Integer.toString((Integer) res)));
+    }
+    if (returnType.equals("str")) {
+      stack.push(new Token(LexemType.CONST_STRING, (String) res));
+    }
   }
 
   private int tokenToInt(Token token) throws ExecuteException {
@@ -167,7 +247,7 @@ public class StackMachine {
 
     int res;
     if (token.getType() == LexemType.VAR) {
-      res = Integer.parseInt(varTable.getValue(token.getValue()));
+      res = (Integer) varTable.getValue(token.getValue());
     }
     else {
       res = Integer.parseInt(token.getValue());
@@ -248,12 +328,24 @@ public class StackMachine {
                                                            rhsValue ? 1 : 0)));
   }
 
-  private void input() {
+  private void input() throws ExecuteException {
     Token token = stack.pop();
+    checkForVar(token);
     Scanner scanner = new Scanner(System.in);
 
     System.out.print("Ygritte: -- ");
-    varTable.add(token.getValue(), Integer.toString(scanner.nextInt()));
+
+    String str = scanner.next();
+    String type = "int";
+    if (varTable.contains(token.getValue())) {
+      type = varTable.getType(token.getValue());
+    }
+    if (type.equals("int")) {
+      varTable.add(token.getValue(), "int", Integer.parseInt(str));
+    }
+    else if (type.equals("str")) {
+      varTable.add(token.getValue(), "str", str);
+    }
   }
 
   private void output() throws ExecuteException {
@@ -261,7 +353,17 @@ public class StackMachine {
 
     String str = "";
     if (token.getType() == LexemType.VAR) {
-      str = varTable.getValue(token.getValue());
+      String type = varTable.getType(token.getValue());
+      Object value = varTable.getValue(token.getValue());
+      if (type.equals("int")) {
+        str = Integer.toString((Integer) value);
+      }
+      if (type.equals("str")) {
+        str = (String) value;
+      }
+      if (type.equals("list")) {
+        str = ((GotlList) value).toString();
+      }
     }
     else if (token.getType() == LexemType.DIGIT) {
       str = token.getValue();
@@ -299,7 +401,7 @@ public class StackMachine {
     int conditionValue = tokenToInt(condition);
     if (conditionValue <= 0) {
       // -1 because where is ++pos in cycle
-      pos = Integer.parseInt(varTable.getValue(pointer.getValue())) - 1;
+      pos = tokenToInt(pointer) - 1;
     }
   }
 
@@ -312,7 +414,7 @@ public class StackMachine {
     }
 
     // -1 because where is ++pos in cycle
-    pos = Integer.parseInt(varTable.getValue(pointer.getValue())) - 1;
+    pos = tokenToInt(pointer) - 1;
   }
 
 }

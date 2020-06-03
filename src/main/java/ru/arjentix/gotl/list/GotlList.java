@@ -1,6 +1,6 @@
 package ru.arjentix.gotl.list;
 
-public class List {
+public class GotlList {
 
   private class Node {
     int value;
@@ -18,7 +18,7 @@ public class List {
   Node tail;
   int size;
   
-  public List() {
+  public GotlList() {
     this.head = null;
     this.tail = null;
     this.size = 0;
@@ -74,6 +74,23 @@ public class List {
 
   public boolean isEmpty() {
     return size == 0;
+  }
+
+  public String toString() {
+    StringBuilder builder = new StringBuilder("{");
+
+    boolean first = true;
+    for (int i = 0; i < size; ++i) {
+      if (!first) {
+        builder.append(", ");
+      }
+
+      builder.append(get(i));
+      first = false;
+    }
+    builder.append("}");
+
+    return builder.toString();
   }
 
   private Node find(int index) {

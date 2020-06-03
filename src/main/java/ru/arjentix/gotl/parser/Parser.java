@@ -112,6 +112,7 @@ public class Parser {
     expressions.add((arg0) -> {return openParanth();});
     expressions.add((arg0) -> {return questionMarkOperation((arg1) -> {return argList();});});
     expressions.add((arg0) -> {return closeParanth();});
+    expressions.add((arg0) -> {return semicolon();});
 
     return andOperation(expressions);
   }
@@ -139,17 +140,10 @@ public class Parser {
 
   private ParseResult valueExpr() {
     List<Function<Object, ParseResult>> expressions = new ArrayList<>();
-    expressions.add((arg0) -> {return value();});
-    expressions.add((arg0) -> {return arithmExpr();});
     expressions.add((arg0) -> {return methodCall();});
-
-    return orOperation(expressions);
-  }
-
-  private ParseResult value() {
-    List<Function<Object, ParseResult>> expressions = new ArrayList<>();
     expressions.add((arg0) -> {return var();});
     expressions.add((arg0) -> {return digit();});
+    expressions.add((arg0) -> {return arithmExpr();});
 
     return orOperation(expressions);
   }
@@ -246,9 +240,9 @@ public class Parser {
 
   private ParseResult logicalExpr() {
     List<Function<Object, ParseResult>> expressions = new ArrayList<>();
-    expressions.add((arg0) -> {return value();});
+    expressions.add((arg0) -> {return valueExpr();});
     expressions.add((arg0) -> {return logicOp();});
-    expressions.add((arg0) -> {return value();});
+    expressions.add((arg0) -> {return valueExpr();});
 
     return andOperation(expressions);
   }
@@ -371,16 +365,10 @@ public class Parser {
     for (Function<Object, ParseResult> func : expressions) {
       ParseResult cur_res = func.apply(null);
       if (cur_res.success) {
-        // System.out.println(new Throwable().fillInStackTrace().getStackTrace()[1].getMethodName() + "::OR::Matched: " + func);
         return cur_res;
       }
       else {
-        // System.out.println(new Throwable().fillInStackTrace().getStackTrace()[1].getMethodName() + "::OR::Not matched: " + func);
         results.add(cur_res);
-        // if func isn't the last
-        if (!func.equals(expressions.get(expressions.size() - 1))) {
-          back(cur_res.depth);
-        }
       }
     }
 
@@ -402,23 +390,19 @@ public class Parser {
   }
 
   private ParseResult andOperation(List<Function<Object, ParseResult>> expressions) {
-    List<ParseResult> results = new ArrayList<>();
+    int depthSum = 0;
     for (Function<Object, ParseResult> func : expressions) {
       ParseResult cur_res = func.apply(null);
-      if (results.size() != 0) {
-        cur_res.depth += results.get(results.size() - 1).depth;
-      }
+      depthSum += cur_res.depth;
   
       if (!cur_res.success) {
-        // System.out.println(new Throwable().fillInStackTrace().getStackTrace()[1].getMethodName() + "::AND::Not matched: " + func);
+        cur_res.depth = depthSum - cur_res.depth;
+        back(cur_res.depth);
         return cur_res;
       }
-
-      // System.out.println(new Throwable().fillInStackTrace().getStackTrace()[1].getMethodName() + "::AND::Matched: " + func);
-      results.add(cur_res);
     }
 
-    return results.get(results.size() - 1);
+    return new ParseResult(true, depthSum, "");
   }
 
   private ParseResult starOperation(Function<Object, ParseResult> expression) {
@@ -430,7 +414,6 @@ public class Parser {
       depthSum += curRes.depth;
     }
 
-    back(curRes.depth);
     curRes.depth = depthSum - curRes.depth;
     curRes.success = true;
     return curRes;
@@ -448,11 +431,9 @@ public class Parser {
     }
 
     if (counter < 1) {
-      back(depth_sum);
       return cur_res;
     }
 
-    back(cur_res.depth);
     cur_res.depth = depth_sum - cur_res.depth;
     cur_res.success = true;
     return cur_res;
@@ -460,9 +441,6 @@ public class Parser {
 
   private ParseResult questionMarkOperation(Function<Object, ParseResult> expression) {
     ParseResult curRes = expression.apply(null);
-    if (!curRes.success) {
-        back(curRes.depth);
-    }
 
     curRes.success = true;
     return curRes;
@@ -478,6 +456,7 @@ public class Parser {
 
   private ParseResult matchToken(Token token, LexemType type) {
     if (!token.getType().equals(type)) {
+      back(1);
       return new ParseResult(false, 1, type + " expected, but " +
                                        token.getType().name() + ": " +
                                        token.getValue() + " found");

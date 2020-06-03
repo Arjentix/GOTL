@@ -9,7 +9,7 @@ import ru.arjentix.gotl.vartable.VarTable;
 import ru.arjentix.gotl.type_table.*;
 import ru.arjentix.gotl.rpn_translator.RpnTranslator;
 import ru.arjentix.gotl.stack_machine.StackMachine;
-import ru.arjentix.gotl.list.List;
+import ru.arjentix.gotl.list.GotlList;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -43,14 +43,15 @@ public class GotlUI {
 
     // List type initialization
     typeTable.put("list", new ArrayList<Method>(Arrays.asList(new Method[] {
-        new Method("add", new ArrayList<String>(){{add("int");}}, "", (arg0, arg1) -> {
-            List list = (List) arg0;
-            list.add((int)arg1);
+        new Method(".add", new ArrayList<String>(){{add("int");}}, "", (arg0, arg1) -> {
+            GotlList list = (GotlList) arg0;
+            ArrayList<Integer> argsList = (ArrayList<Integer>) arg1;
+            list.add(argsList.get(0));
 
             return null;
         }),
-        new Method("insert", new ArrayList<String>(){{add("int"); add("int");}}, "", (arg0, arg1) -> {
-            List list = (List) arg0;
+        new Method(".insert", new ArrayList<String>(){{add("int"); add("int");}}, "", (arg0, arg1) -> {
+            GotlList list = (GotlList) arg0;
             ArrayList<Integer> argsList = (ArrayList<Integer>) arg1;
             int realArg0 = argsList.get(0);
             int realArg1 = argsList.get(1);
@@ -58,22 +59,24 @@ public class GotlUI {
 
             return null;
         }),
-        new Method("get", new ArrayList<String>(){{add("int");}}, "int", (arg0, arg1) -> {
-            List list = (List) arg0;
-            return list.get((int)arg1);
+        new Method(".get", new ArrayList<String>(){{add("int");}}, "int", (arg0, arg1) -> {
+            GotlList list = (GotlList) arg0;
+            ArrayList<Integer> argsList = (ArrayList<Integer>) arg1;
+            return list.get(argsList.get(0));
         }),
-        new Method("remove", new ArrayList<String>(){{add("int");}}, "", (arg0, arg1) -> {
-            List list = (List) arg0;
-            list.remove((int)arg1);
+        new Method(".remove", new ArrayList<String>(){{add("int");}}, "", (arg0, arg1) -> {
+            GotlList list = (GotlList) arg0;
+            ArrayList<Integer> argsList = (ArrayList<Integer>) arg1;
+            list.remove(argsList.get(0));
 
             return null;
         }),
-        new Method("size", new ArrayList<String>(), "int", (arg0, arg1) -> {
-            List list = (List) arg0;
+        new Method(".size", new ArrayList<String>(), "int", (arg0, arg1) -> {
+            GotlList list = (GotlList) arg0;
             return list.size();
         }),
-        new Method("isEmpty", new ArrayList<String>(), "int", (arg0, arg1) -> {
-            List list = (List) arg0;
+        new Method(".isEmpty", new ArrayList<String>(), "int", (arg0, arg1) -> {
+            GotlList list = (GotlList) arg0;
             return list.isEmpty() ? 1 : 0;
         })
     })));
@@ -82,7 +85,7 @@ public class GotlUI {
     System.out.println("Reverse Polish Notation: " + translator.getRpn() + "\n");
     System.out.println("Table of variables: " + varTable + "\n");
 
-    StackMachine stackMachine = new StackMachine(translator.getRpn(), varTable);
+    StackMachine stackMachine = new StackMachine(translator.getRpn(), varTable, typeTable);
 
     System.out.println("<----- Program output ----->");
     stackMachine.execute();

@@ -28,6 +28,8 @@ public class RpnTranslator {
     Stack<Token> stack = new Stack<>();
     Stack<LexemType> exprWithTransitions = new Stack<>();
     Stack<Integer> whileKwPositions = new Stack<>();
+    Stack<Token> varsWithMethodCalled = new Stack<>();
+    Stack<Token> methodCalled = new Stack<>();
     int transitionNumber = 0;
     boolean wasInput = false; // true -- was "Jon" token, false -- was "Ygritte" token
 
@@ -36,6 +38,13 @@ public class RpnTranslator {
 
       // Skipping tokens with priority < 0
       if (curType.getPriority() < 0) {
+        continue;
+      }
+
+      // Processing METHOD
+      if (curType == LexemType.METHOD) {
+        varsWithMethodCalled.push(rpnList.remove(rpnList.size() - 1));
+        methodCalled.push(curToken);
         continue;
       }
 
@@ -65,7 +74,8 @@ public class RpnTranslator {
 
       // Processing variables, digits and strings
       if (curType == LexemType.VAR || curType == LexemType.DIGIT || 
-          curType == LexemType.CONST_STRING) {
+          curType == LexemType.CONST_STRING ||
+          curType == LexemType.TYPE) {
         rpnList.add(curToken);
         continue;
       }
@@ -84,12 +94,21 @@ public class RpnTranslator {
 
       // Processing close paranth
       if (curType == LexemType.CLOSE_PARENTH) {
+        if (!methodCalled.empty()) {
+          rpnList.add(varsWithMethodCalled.pop());
+          rpnList.add(methodCalled.pop());
+        }
         Token top = stack.pop();
         while (top.getType() != LexemType.OPEN_PARENTH) {
           rpnList.add(top);
           top = stack.pop();
         }
 
+        continue;
+      }
+
+      // Processing open bracket
+      if (curType == LexemType.OPEN_BRACKET) {
         // Inserting false transition
         if (!exprWithTransitions.empty()) {
             rpnList.add(
@@ -111,20 +130,19 @@ public class RpnTranslator {
           int oldTransitionNumber = transitionNumber;
 
           if (exprWithTransitions.lastElement() == LexemType.WHILE_KW) {
-            falseTransitionPointer += 2; // To skip uncondition transition
+            falseTransitionPointer += 2; // To skip unconditional transition
 
             String transVar = "_p" +
                               Integer.toString(++transitionNumber);
             rpnList.add(new Token(LexemType.VAR, transVar));
             rpnList.add(new Token(LexemType.UNCONDITIONAL_TRANSITION, "!"));
-            varTable.add(transVar,
-                         Integer.toString(whileKwPositions.pop())
-            );
+            varTable.add(transVar, "int",
+                         whileKwPositions.pop());
           }
           // Adding pointer for false transition
-          varTable.add("_p" + Integer.toString(oldTransitionNumber),
-                       Integer.toString(falseTransitionPointer)
-          );
+          varTable.add("_p" + Integer.toString(oldTransitionNumber), "int",
+                       falseTransitionPointer);
+          exprWithTransitions.pop();
         }
 
         continue;

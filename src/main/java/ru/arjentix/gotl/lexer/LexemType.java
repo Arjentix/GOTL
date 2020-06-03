@@ -26,15 +26,15 @@ public enum LexemType {
   SEMICOLON("\\;", 10),
   OPEN_PARENTH("\\(", 1),
   CLOSE_PARENTH("\\)", 1),
-  OPEN_BRACKET("\\{", -1),
+  OPEN_BRACKET("\\{", 1),
   CLOSE_BRACKET("\\}", 1),
-  METHOD("\\.[a-zA-z]+", 0),
+  METHOD("\\.[a-zA-z]+", 5),
   VAR("[a-zA-z]+", 0),
   // Types for RPN
   FALSE_TRANSITION("", 10),
   UNCONDITIONAL_TRANSITION("", 10),
   INPUT_OP("", 10),
-  OUTPUT_OP("", 10);
+  OUTPUT_OP("", 2);
 
   private Pattern pattern;
   private int priority;
