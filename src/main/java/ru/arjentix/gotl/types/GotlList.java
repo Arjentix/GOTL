@@ -3,11 +3,11 @@ package ru.arjentix.gotl.types;
 public class GotlList {
 
   private class Node {
-    int value;
+    Object value;
     Node prev;
     Node next;
 
-    public Node(int value, Node prev, Node next) {
+    public Node(Object value, Node prev, Node next) {
       this.value = value;
       this.prev = prev;
       this.next = next;
@@ -24,7 +24,7 @@ public class GotlList {
     this.size = 0;
   }
 
-  public void add(int value) {
+  public void add(Object value) {
     Node node = new Node(value, null, tail);
 
     if (tail != null) {
@@ -39,7 +39,7 @@ public class GotlList {
     ++size;
   }
 
-  public void insert(int index, int value) {
+  public void insert(int index, Object value) {
     Node node = find(index);
     Node newNode = new Node(value, node, node.next);
     
@@ -51,7 +51,7 @@ public class GotlList {
     }
   }
 
-  public int get(int index) {
+  public Object get(int index) {
     return find(index).value;
   }
 
