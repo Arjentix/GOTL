@@ -336,6 +336,7 @@ public class StackMachine {
     System.out.print("Ygritte: -- ");
 
     String str = scanner.next();
+    scanner.close();
     String type = "int";
     if (varTable.contains(token.getValue())) {
       type = varTable.getType(token.getValue());
