@@ -14,9 +14,9 @@ public class GotlList {
     }
   }
 
-  Node head;
-  Node tail;
-  int size;
+  private Node head;
+  private Node tail;
+  private int size;
   
   public GotlList() {
     this.head = null;
@@ -74,6 +74,11 @@ public class GotlList {
 
   public boolean isEmpty() {
     return size == 0;
+  }
+
+  public void clear() {
+    head = tail = null;
+    size = 0;
   }
 
   public String toString() {
