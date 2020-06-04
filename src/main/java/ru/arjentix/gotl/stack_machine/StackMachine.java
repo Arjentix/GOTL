@@ -5,8 +5,8 @@ import ru.arjentix.gotl.token.Token;
 import ru.arjentix.gotl.vartable.VarTable;
 import ru.arjentix.gotl.type_table.Method;
 import ru.arjentix.gotl.type_table.TypeTable;
+import ru.arjentix.gotl.types.GotlList;
 import ru.arjentix.gotl.exception.ExecuteException;
-import ru.arjentix.gotl.list.GotlList;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -336,7 +336,6 @@ public class StackMachine {
     System.out.print("Ygritte: -- ");
 
     String str = scanner.next();
-    scanner.close();
     String type = "int";
     if (varTable.contains(token.getValue())) {
       type = varTable.getType(token.getValue());

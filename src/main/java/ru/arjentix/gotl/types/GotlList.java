@@ -1,4 +1,4 @@
-package ru.arjentix.gotl.list;
+package ru.arjentix.gotl.types;
 
 public class GotlList {
 

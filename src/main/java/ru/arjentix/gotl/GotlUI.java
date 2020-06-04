@@ -7,9 +7,9 @@ import ru.arjentix.gotl.lexer.Lexer;
 import ru.arjentix.gotl.parser.Parser;
 import ru.arjentix.gotl.vartable.VarTable;
 import ru.arjentix.gotl.type_table.*;
+import ru.arjentix.gotl.types.GotlList;
 import ru.arjentix.gotl.rpn_translator.RpnTranslator;
 import ru.arjentix.gotl.stack_machine.StackMachine;
-import ru.arjentix.gotl.list.GotlList;
 
 import java.io.IOException;
 import java.nio.file.Files;
