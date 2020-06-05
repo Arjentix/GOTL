@@ -213,30 +213,21 @@ public class StackMachine {
       else {
         if (arg.getType() == LexemType.DIGIT) {
           argType = "int";
-          argValue = arg.getValue();
+          value = Integer.parseInt(arg.getValue());
         }
         else if (arg.getType() == LexemType.CONST_STRING) {
           argType = "str";
-          argValue = arg.getValue();
-        }
-
-        if (paramType.equals("int")) {
-          value = Integer.parseInt(argValue);
-        }
-        if (paramType.equals("str")) {
-          value = argValue.toString();
-        }
-        if (paramType.equals("Object")) {
-          value = argValue;
+          value = arg.getValue();
         }
       }
 
-      if (!argType.equals(paramType)) {
+      if (!paramType.equals("Object") && !argType.equals(paramType)) {
         wrongArgType(name, varType, paramType, argType);
       }
 
       args.add(value);
     }
+    Collections.reverse(args);
 
     Object res = realMethod.invoke(varTable.getValue(variable.getValue()), args);
 
