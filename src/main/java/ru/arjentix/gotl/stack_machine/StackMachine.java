@@ -5,6 +5,7 @@ import ru.arjentix.gotl.token.Token;
 import ru.arjentix.gotl.vartable.VarTable;
 import ru.arjentix.gotl.type_table.Method;
 import ru.arjentix.gotl.type_table.TypeTable;
+import ru.arjentix.gotl.types.GotlHashMap;
 import ru.arjentix.gotl.types.GotlList;
 import ru.arjentix.gotl.exception.ExecuteException;
 
@@ -151,6 +152,9 @@ public class StackMachine {
       if (value.getValue().equals("list")) {
         realValue = new GotlList();
       }
+      if (value.getValue().equals("map")) {
+        realValue = new GotlHashMap();
+      }
       type = value.getValue(); 
     }
     else if (value.getType() == LexemType.DIGIT) {
@@ -220,6 +224,9 @@ public class StackMachine {
           value = Integer.parseInt(argValue);
         }
         if (paramType.equals("str")) {
+          value = argValue.toString();
+        }
+        if (paramType.equals("Object")) {
           value = argValue;
         }
       }
@@ -234,11 +241,31 @@ public class StackMachine {
     Object res = realMethod.invoke(varTable.getValue(variable.getValue()), args);
 
     String returnType = realMethod.getReturnType();
+    if (returnType.equals("Object")) {
+      if (res.getClass() == Integer.class) {
+        returnType = "int";
+      }
+      else if (res.getClass() == String.class) {
+        returnType = "str";
+      }
+      else if (res.getClass() == GotlList.class) {
+        returnType = "list";
+      }
+      else if (res.getClass() == GotlHashMap.class) {
+        returnType = "map";
+      }
+    }
     if (returnType.equals("int")) {
       stack.push(new Token(LexemType.DIGIT, Integer.toString((Integer) res)));
     }
     if (returnType.equals("str")) {
       stack.push(new Token(LexemType.CONST_STRING, (String) res));
+    }
+    if (returnType.equals("list")) {
+      stack.push(new Token(LexemType.DIGIT, ((GotlList) res).toString()));
+    }
+    if (returnType.equals("map")) {
+      stack.push(new Token(LexemType.CONST_STRING, ((GotlHashMap) res).toString()));
     }
   }
 
