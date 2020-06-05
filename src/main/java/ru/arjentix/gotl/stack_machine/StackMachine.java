@@ -353,11 +353,15 @@ public class StackMachine {
 
     System.out.print("Ygritte: -- ");
 
-    String str = scanner.next();
+    String str = scanner.nextLine();
     String type = "int";
-    if (varTable.contains(token.getValue())) {
-      type = varTable.getType(token.getValue());
+    try {
+      Integer.parseInt(str);
     }
+    catch (NumberFormatException ex) {
+      type = "str";
+    }
+
     if (type.equals("int")) {
       varTable.add(token.getValue(), "int", Integer.parseInt(str));
     }
@@ -381,6 +385,9 @@ public class StackMachine {
       }
       if (type.equals("list")) {
         str = ((GotlList) value).toString();
+      }
+      if (type.equals("map")) {
+        str = ((GotlHashMap) value).toString();
       }
     }
     else if (token.getType() == LexemType.DIGIT) {
