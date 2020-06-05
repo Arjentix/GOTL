@@ -22,7 +22,7 @@ public class StackMachine {
   private TypeTable typeTable;
   private int pos;
   private Stack<Token> stack;
-  private boolean wasOutput;
+  private boolean newLine;
 
   public StackMachine(List<Token> rpnList, VarTable varTable, TypeTable typeTable) {
     this.rpnList = rpnList;
@@ -30,7 +30,7 @@ public class StackMachine {
     this.typeTable = typeTable;
     pos = 0;
     stack = new Stack<>();
-    wasOutput = false;
+    newLine = true;
   }
 
   public void execute() throws ExecuteException {
@@ -50,9 +50,6 @@ public class StackMachine {
         stack.push(curToken);
       }
       else {
-        if (curType != LexemType.OUTPUT_OP) {
-          wasOutput = false;
-        }
         switch (curType) {
         case ASSIGN_OP:
           assign();
@@ -98,6 +95,9 @@ public class StackMachine {
           break;
         case OUTPUT_OP:
           output();
+          break;
+        case OUTPUT_NEWLINE:
+          newLine = true;
           break;
         case FALSE_TRANSITION:
           falseTransition();
@@ -405,18 +405,17 @@ public class StackMachine {
                                  token.getValue());
     }
 
-    if (wasOutput) {
-      System.out.print(str);
+    if (newLine) {
+      System.out.print("Jon: -- ");
     }
-    else {
-      System.out.print("Jon: -- " + str);
-    }
+    System.out.print(str);
+
     if ((pos + 2 >= rpnList.size()) ||
         ((pos + 2 < rpnList.size()) && rpnList.get(pos + 2).getType() != LexemType.OUTPUT_OP)) {
       System.out.println();
     }
 
-    wasOutput = true;
+    newLine = false;
   }
 
   private void falseTransition() throws ExecuteException {

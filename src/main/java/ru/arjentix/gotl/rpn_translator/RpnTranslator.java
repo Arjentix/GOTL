@@ -51,6 +51,7 @@ public class RpnTranslator {
       // Processing JON
       if (curType == LexemType.JON) {
           wasInput = false;
+          rpnList.add(new Token(LexemType.OUTPUT_NEWLINE, "\n"));
           continue;
       }
 
