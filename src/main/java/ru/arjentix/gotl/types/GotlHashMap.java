@@ -73,6 +73,26 @@ public class GotlHashMap {
     size = 0;
   }
 
+  public String toString() {
+    StringBuilder builder = new StringBuilder("{");
+    boolean first = true;
+
+    for (int i = 0; i < bucketsCount; ++i) {
+      GotlList bucket = buckets[i];
+      for (int j = 0; j < bucket.size(); ++j) {
+        if (!first) {
+          builder.append(", ");
+        }
+        Item item = (Item) bucket.get(j);
+        builder.append(item.key.toString() + " : " + item.value.toString());
+        first = false;
+      }
+    }
+    builder.append("}");
+
+    return builder.toString();
+  }
+
   private int getIndex(Object key) {
     return Math.abs(key.hashCode()) % bucketsCount;
   }
