@@ -38,7 +38,20 @@ public class GotlUI {
     parser.lang();
 
     VarTable varTable = new VarTable();
+    TypeTable typeTable = buildTypeTable();
 
+
+    RpnTranslator translator = new RpnTranslator(lexer.getTokens(), varTable);
+    System.out.println("Reverse Polish Notation: " + translator.getRpn() + "\n");
+    System.out.println("Table of variables: " + varTable + "\n");
+
+    StackMachine stackMachine = new StackMachine(translator.getRpn(), varTable, typeTable);
+
+    System.out.println("<----- Program output ----->");
+    stackMachine.execute();
+  }
+
+  private static TypeTable buildTypeTable() {
     TypeTable typeTable = new TypeTable();
 
     // List type initialization
@@ -81,13 +94,6 @@ public class GotlUI {
         })
     })));
 
-    RpnTranslator translator = new RpnTranslator(lexer.getTokens(), varTable);
-    System.out.println("Reverse Polish Notation: " + translator.getRpn() + "\n");
-    System.out.println("Table of variables: " + varTable + "\n");
-
-    StackMachine stackMachine = new StackMachine(translator.getRpn(), varTable, typeTable);
-
-    System.out.println("<----- Program output ----->");
-    stackMachine.execute();
+    return typeTable;
   }
 }
