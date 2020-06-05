@@ -13,7 +13,7 @@ public enum LexemType {
   JON("Jon\\:", 0),
   YGRITTE("Ygritte\\:", 0),
   COMMA(",", -1),
-  TYPE("int|str|list", 2),
+  TYPE("int|str|list|map", 2),
   ASSIGN_OP("=", 2),
   INPUT_OUTPUT_OP("--", 2),
   DIGIT("0|([1-9][0-9]*)", 0),
