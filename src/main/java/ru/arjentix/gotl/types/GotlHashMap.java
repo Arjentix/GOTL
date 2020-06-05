@@ -79,13 +79,15 @@ public class GotlHashMap {
 
     for (int i = 0; i < bucketsCount; ++i) {
       GotlList bucket = buckets[i];
-      for (int j = 0; j < bucket.size(); ++j) {
-        if (!first) {
-          builder.append(", ");
+      if (bucket != null) {
+        for (int j = 0; j < bucket.size(); ++j) {
+          if (!first) {
+            builder.append(", ");
+          }
+          Item item = (Item) bucket.get(j);
+          builder.append(item.key.toString() + " : " + item.value.toString());
+          first = false;
         }
-        Item item = (Item) bucket.get(j);
-        builder.append(item.key.toString() + " : " + item.value.toString());
-        first = false;
       }
     }
     builder.append("}");
