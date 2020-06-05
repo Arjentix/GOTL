@@ -25,7 +25,7 @@ public class VarTable {
     hashMap = new HashMap<>();
   }
 
-  public void add(String var, String value) {
+  public void add(String var, Object value) {
     hashMap.put(var, new VarData("int", value));
   }
 
