@@ -4,7 +4,7 @@ assign_expr -> DAENERIS VAR ASSIGN_OP assign_value SEMICOLON
 assign_value -> value_expr|TYPE|CONST_STRING
 value_expr -> VAR|DIGIT|arithm_expr|method_call
 method_call -> VAR METHOD OPEN_PARANTH arg_list? CLOSE_PARANTH SEMICOLON
-arg_list -> value_expr (COMMA value_expr)*
+arg_list -> value_expr (COMMA value_expr|CONST_STRING)*
 arithm_expr -> TYRION arithm_body
 arithm_body -> OPEN_PARANTH? value_expr (op arithm_body)* CLOSE_PARANTH?
 op -> PLUS_MINUS | MULT_DIV

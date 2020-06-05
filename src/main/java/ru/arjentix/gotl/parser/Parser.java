@@ -127,7 +127,12 @@ public class Parser {
     expressions.add((arg0) -> {
       List<Function<Object, ParseResult>> starExpressions = new ArrayList<>();
       starExpressions.add((arg1) -> {return comma();});
-      starExpressions.add((arg1) -> {return valueExpr();});
+      starExpressions.add((arg1) -> {
+        List<Function<Object, ParseResult>> orExpressions = new ArrayList<>();
+        orExpressions.add((arg2) -> {return valueExpr();});
+        orExpressions.add((arg2) -> {return constString();});
+        return orOperation(orExpressions);
+      });
       return starOperation((arg1) -> {return andOperation(starExpressions);});
     });
 
