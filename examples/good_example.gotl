@@ -33,10 +33,15 @@ Arya: while (i < size) {
 
 Jon: -- "Your list is: " -- l;
 
-Jon: -- "Which element do you want?";
+Jon: -- "Which element do you want to get?";
 Ygritte: -- index;
 Daeneris: value = l.get(index);;
 Jon: -- "Here it is: " -- value;
+
+Jon: -- "Which element do you want to delete?";
+Ygritte: -- index;
+l.remove(index);
+Jon: -- "Your list is: " -- l;
 
 
 
