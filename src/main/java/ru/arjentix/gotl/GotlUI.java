@@ -57,31 +57,29 @@ public class GotlUI {
 
     // GotlList type initialization
     typeTable.put("list", new ArrayList<Method>(Arrays.asList(new Method[] {
-        new Method(".add", new ArrayList<String>(){{add("int");}}, "", (arg0, arg1) -> {
+        new Method(".add", new ArrayList<String>(){{add("Object");}}, "", (arg0, arg1) -> {
             GotlList list = (GotlList) arg0;
-            ArrayList<Integer> argsList = (ArrayList<Integer>) arg1;
+            ArrayList<Object> argsList = (ArrayList<Object>) arg1;
             list.add(argsList.get(0));
 
             return null;
         }),
-        new Method(".insert", new ArrayList<String>(){{add("int"); add("int");}}, "", (arg0, arg1) -> {
+        new Method(".insert", new ArrayList<String>(){{add("int"); add("Object");}}, "", (arg0, arg1) -> {
             GotlList list = (GotlList) arg0;
-            ArrayList<Integer> argsList = (ArrayList<Integer>) arg1;
-            int realArg0 = argsList.get(0);
-            int realArg1 = argsList.get(1);
-            list.insert(realArg0, realArg1);
+            ArrayList<Object> argsList = (ArrayList<Object>) arg1;
+            list.insert((int) argsList.get(0), argsList.get(1));
 
             return null;
         }),
-        new Method(".get", new ArrayList<String>(){{add("int");}}, "int", (arg0, arg1) -> {
+        new Method(".get", new ArrayList<String>(){{add("int");}}, "Object", (arg0, arg1) -> {
             GotlList list = (GotlList) arg0;
-            ArrayList<Integer> argsList = (ArrayList<Integer>) arg1;
-            return list.get(argsList.get(0));
+            ArrayList<Object> argsList = (ArrayList<Object>) arg1;
+            return list.get((int) argsList.get(0));
         }),
         new Method(".remove", new ArrayList<String>(){{add("int");}}, "", (arg0, arg1) -> {
             GotlList list = (GotlList) arg0;
-            ArrayList<Integer> argsList = (ArrayList<Integer>) arg1;
-            list.remove(argsList.get(0));
+            ArrayList<Object> argsList = (ArrayList<Object>) arg1;
+            list.remove((int) argsList.get(0));
 
             return null;
         }),
@@ -105,31 +103,29 @@ public class GotlUI {
     typeTable.put("map", new ArrayList<Method>(Arrays.asList(new Method[] {
         new Method(".put", new ArrayList<String>(){{add("Object"); add("Object");}}, "", (arg0, arg1) -> {
             GotlHashMap hashMap = (GotlHashMap) arg0;
-            ArrayList<Integer> argsList = (ArrayList<Integer>) arg1;
+            ArrayList<Object> argsList = (ArrayList<Object>) arg1;
             hashMap.put(argsList.get(0), argsList.get(1));
 
             return null;
         }),
         new Method(".get", new ArrayList<String>(){{add("Object");}}, "Object", (arg0, arg1) -> {
             GotlHashMap hashMap = (GotlHashMap) arg0;
-            ArrayList<Integer> argsList = (ArrayList<Integer>) arg1;
+            ArrayList<Object> argsList = (ArrayList<Object>) arg1;
             return hashMap.get(argsList.get(0));
         }),
         new Method(".remove", new ArrayList<String>(){{add("Object");}}, "", (arg0, arg1) -> {
             GotlHashMap hashMap = (GotlHashMap) arg0;
-            ArrayList<Integer> argsList = (ArrayList<Integer>) arg1;
+            ArrayList<Object> argsList = (ArrayList<Object>) arg1;
             hashMap.remove(argsList.get(0));
 
             return null;
         }),
         new Method(".size", new ArrayList<String>(), "int", (arg0, arg1) -> {
             GotlHashMap hashMap = (GotlHashMap) arg0;
-            ArrayList<Integer> argsList = (ArrayList<Integer>) arg1;
             return hashMap.size();
         }),
         new Method(".clear", new ArrayList<String>(), "", (arg0, arg1) -> {
             GotlHashMap hashMap = (GotlHashMap) arg0;
-            ArrayList<Integer> argsList = (ArrayList<Integer>) arg1;
             hashMap.clear();
 
             return null;
