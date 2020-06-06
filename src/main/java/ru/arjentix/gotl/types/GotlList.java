@@ -65,6 +65,13 @@ public class GotlList {
       node.prev.next = node.next;
     }
 
+    if (node.equals(head)) {
+      head = head.prev;
+    }
+    if (node.equals(tail)) {
+      tail = tail.next;
+    }
+
     --size;
   }
 
