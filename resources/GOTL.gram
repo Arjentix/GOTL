@@ -28,7 +28,7 @@ ARYA -> Arya:
 JON -> Jon:
 YGRITTE -> Ygritte:
 COMMA -> ,
-TYPE -> int|str|list
+TYPE -> int|str|list|map
 METHOD -> \.[a-zA-z]+
 VAR -> [a-zA-z]+
 ASSIGN_OP -> =
