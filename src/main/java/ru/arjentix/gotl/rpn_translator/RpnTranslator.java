@@ -161,16 +161,19 @@ public class RpnTranslator {
       // Processing other types
       if (stack.empty() ||
           stack.peek().getType().getPriority() < curType.getPriority()) {
+          System.out.println("Pushing " + curToken);
           stack.push(curToken);
       }
       else {
-        Token top = stack.pop();
+        Token top = stack.peek();
         while (!stack.empty() &&
                 top.getType().getPriority() >= curType.getPriority()) {
+          System.out.println("Adding " + top);
           rpnList.add(top);
-          top = stack.pop();
+          stack.pop();
+          top = stack.peek();
         }
-        if (top != null) { // Adding last element
+        if (stack.empty() && top != null) { // Adding last element
           rpnList.add(top);
         }
 
