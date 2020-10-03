@@ -1,0 +1,12 @@
+Valar Morghulis
+
+Daeneris: a = 5;
+Daeneris: b = 31;
+Daeneris: c = 17;
+Daeneris: d = 11;
+
+Daeneris: d = d + c*b;
+Daeneris: a = d + c*b;
+Daeneris: c = d + c*b;
+
+Valar Dohaeris
