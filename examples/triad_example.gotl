@@ -1,7 +1,7 @@
 Valar Morghulis
 
-Daeneris: a = 2 + 2;
+Daeneris: a = Tyrion: 2 + 2;
 Daeneris: a = 3;
-Daeneris: b = 2*a + 3;
+Daeneris: b = Tyrion: 2*a + 3;
 
 Valar Dohaeris
