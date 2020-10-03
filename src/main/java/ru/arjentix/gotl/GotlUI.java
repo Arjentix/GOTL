@@ -55,83 +55,89 @@ public class GotlUI {
   private static TypeTable buildTypeTable() {
     TypeTable typeTable = new TypeTable();
 
-    // GotlList type initialization
-    typeTable.put("list", new ArrayList<Method>(Arrays.asList(new Method[] {
-        new Method(".add", new ArrayList<String>(){{add("Object");}}, "", (arg0, arg1) -> {
+    initList(typeTable);
+    initMap(typeTable);
+
+    return typeTable;
+  }
+
+  public static void initList(TypeTable typeTable) {
+    typeTable.put("list", new ArrayList<>(Arrays.asList(
+        new Method(".add", new ArrayList<>(Arrays.asList("Object")), "", (arg0, arg1) -> {
             GotlList list = (GotlList) arg0;
             ArrayList<Object> argsList = (ArrayList<Object>) arg1;
             list.add(argsList.get(0));
 
             return null;
         }),
-        new Method(".insert", new ArrayList<String>(){{add("int"); add("Object");}}, "", (arg0, arg1) -> {
+        new Method(".insert", new ArrayList<>(Arrays.asList("int", "Object")), "", (arg0, arg1) -> {
             GotlList list = (GotlList) arg0;
             ArrayList<Object> argsList = (ArrayList<Object>) arg1;
             list.insert((int) argsList.get(0), argsList.get(1));
 
             return null;
         }),
-        new Method(".get", new ArrayList<String>(){{add("int");}}, "Object", (arg0, arg1) -> {
+        new Method(".get", new ArrayList<>(Arrays.asList("int")), "Object", (arg0, arg1) -> {
             GotlList list = (GotlList) arg0;
             ArrayList<Object> argsList = (ArrayList<Object>) arg1;
             return list.get((int) argsList.get(0));
         }),
-        new Method(".remove", new ArrayList<String>(){{add("int");}}, "", (arg0, arg1) -> {
+        new Method(".remove", new ArrayList<>(Arrays.asList("int")), "", (arg0, arg1) -> {
             GotlList list = (GotlList) arg0;
             ArrayList<Object> argsList = (ArrayList<Object>) arg1;
             list.remove((int) argsList.get(0));
 
             return null;
         }),
-        new Method(".size", new ArrayList<String>(), "int", (arg0, arg1) -> {
+        new Method(".size", new ArrayList<>(), "int", (arg0, arg1) -> {
             GotlList list = (GotlList) arg0;
             return list.size();
         }),
-        new Method(".isEmpty", new ArrayList<String>(), "int", (arg0, arg1) -> {
+        new Method(".isEmpty", new ArrayList<>(), "int", (arg0, arg1) -> {
             GotlList list = (GotlList) arg0;
             return list.isEmpty() ? 1 : 0;
         }),
-        new Method(".clear", new ArrayList<String>(), "", (arg0, arg1) -> {
+        new Method(".clear", new ArrayList<>(), "", (arg0, arg1) -> {
             GotlList list = (GotlList) arg0;
             list.clear();
 
             return null;
         })
-    })));
+    )));
+  }
 
-    // GotlHashMap type initialization
-    typeTable.put("map", new ArrayList<Method>(Arrays.asList(new Method[] {
-        new Method(".put", new ArrayList<String>(){{add("Object"); add("Object");}}, "", (arg0, arg1) -> {
+  public static void initMap(TypeTable typeTable) {
+    typeTable.put("map", new ArrayList<>(Arrays.asList(
+        new Method(".put", new ArrayList<>(Arrays.asList("Object", "Object")), "", (arg0, arg1) -> {
             GotlHashMap hashMap = (GotlHashMap) arg0;
             ArrayList<Object> argsList = (ArrayList<Object>) arg1;
             hashMap.put(argsList.get(0), argsList.get(1));
 
             return null;
         }),
-        new Method(".get", new ArrayList<String>(){{add("Object");}}, "Object", (arg0, arg1) -> {
+        new Method(".get", new ArrayList<>(Arrays.asList("Object")), "Object", (arg0, arg1) -> {
             GotlHashMap hashMap = (GotlHashMap) arg0;
             ArrayList<Object> argsList = (ArrayList<Object>) arg1;
             return hashMap.get(argsList.get(0));
         }),
-        new Method(".remove", new ArrayList<String>(){{add("Object");}}, "", (arg0, arg1) -> {
+        new Method(".remove", new ArrayList<>(Arrays.asList("Object")), "", (arg0, arg1) -> {
             GotlHashMap hashMap = (GotlHashMap) arg0;
             ArrayList<Object> argsList = (ArrayList<Object>) arg1;
             hashMap.remove(argsList.get(0));
 
             return null;
         }),
-        new Method(".size", new ArrayList<String>(), "int", (arg0, arg1) -> {
+        new Method(".size", new ArrayList<>(), "int", (arg0, arg1) -> {
             GotlHashMap hashMap = (GotlHashMap) arg0;
             return hashMap.size();
         }),
-        new Method(".clear", new ArrayList<String>(), "", (arg0, arg1) -> {
+        new Method(".clear", new ArrayList<>(), "", (arg0, arg1) -> {
             GotlHashMap hashMap = (GotlHashMap) arg0;
             hashMap.clear();
 
             return null;
         })
-    })));
+    )));
 
-    return typeTable;
   }
 }
