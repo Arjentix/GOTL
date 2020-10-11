@@ -11,15 +11,22 @@ import ru.arjentix.gotl.types.GotlHashMap;
 import ru.arjentix.gotl.types.GotlList;
 import ru.arjentix.gotl.rpn_translator.RpnTranslator;
 import ru.arjentix.gotl.stack_machine.StackMachine;
+import ru.arjentix.gotl.token.Token;
+import ru.arjentix.gotl.triad_optimizer.TriadOptimizer;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 
 public class GotlUI {
+
+    // Lexer -> Parser -> RPN -> Triads -> Optimization -> RPN -> Save to File -> Stack Machine
   public static void main(String[] args) throws IOException, GotlTokenizeException, LangParseException, ExecuteException {
     System.out.println("Start GOTL UI");
 
@@ -38,15 +45,19 @@ public class GotlUI {
     Parser parser = new Parser(lexer.getTokens());
     parser.lang();
 
-    VarTable varTable = new VarTable();
     TypeTable typeTable = buildTypeTable();
 
 
-    RpnTranslator translator = new RpnTranslator(lexer.getTokens(), varTable);
-    System.out.println("Reverse Polish Notation: " + translator.getRpn() + "\n");
-    System.out.println("Table of variables: " + varTable + "\n");
+    RpnTranslator translator = new RpnTranslator(lexer.getTokens());
+    List<Token> rpn = translator.getRpn();
+    System.out.println("Reverse Polish Notation: " + rpn + "\n");
+    System.out.println("Table of variables: " + VarTable.getInstance() + "\n");
 
-    StackMachine stackMachine = new StackMachine(translator.getRpn(), varTable, typeTable);
+    TriadOptimizer optimizer = new TriadOptimizer(rpn);
+    optimizer.optimize();
+
+    clearVarTable();
+    StackMachine stackMachine = new StackMachine(rpn, typeTable);
 
     System.out.println("<----- Program output ----->");
     stackMachine.execute();
@@ -61,7 +72,7 @@ public class GotlUI {
     return typeTable;
   }
 
-  public static void initList(TypeTable typeTable) {
+  private static void initList(TypeTable typeTable) {
     typeTable.put("list", new ArrayList<>(Arrays.asList(
         new Method(".add", new ArrayList<>(Arrays.asList("Object")), "", (arg0, arg1) -> {
             GotlList list = (GotlList) arg0;
@@ -106,7 +117,7 @@ public class GotlUI {
     )));
   }
 
-  public static void initMap(TypeTable typeTable) {
+  private static void initMap(TypeTable typeTable) {
     typeTable.put("map", new ArrayList<>(Arrays.asList(
         new Method(".put", new ArrayList<>(Arrays.asList("Object", "Object")), "", (arg0, arg1) -> {
             GotlHashMap hashMap = (GotlHashMap) arg0;
@@ -139,5 +150,14 @@ public class GotlUI {
         })
     )));
 
+  }
+
+  private static void clearVarTable() {
+    Iterator<String> it = VarTable.getInstance().keySet().iterator();
+    while (it.hasNext()) {
+        if (it.next().charAt(0) != '_') {
+          it.remove();
+        }
+    }
   }
 }
