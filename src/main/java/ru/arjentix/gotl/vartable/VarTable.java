@@ -2,6 +2,7 @@ package ru.arjentix.gotl.vartable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class VarTable {
 
@@ -20,9 +21,18 @@ public class VarTable {
   }
 
   private HashMap<String, VarData> hashMap;
+  private static VarTable instance;
 
-  public VarTable() {
+  private VarTable() {
     hashMap = new HashMap<>();
+  }
+
+  public static VarTable getInstance() {
+    if (instance == null) {
+      instance = new VarTable();
+    }
+
+    return instance;
   }
 
   public void add(String var, Object value) {
@@ -31,6 +41,10 @@ public class VarTable {
 
   public void add(String var, String type, Object value) {
     hashMap.put(var, new VarData(type, value));
+  }
+
+  public void remove(String var) {
+    hashMap.remove(var);
   }
 
   public boolean contains(String var) {
@@ -51,6 +65,10 @@ public class VarTable {
 
   public void setValue(String var, Object value) {
     hashMap.get(var).value = value;
+  }
+
+  public Set<String> keySet() {
+    return hashMap.keySet();
   }
 
   public String toString() {
