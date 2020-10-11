@@ -18,19 +18,21 @@ import java.util.Stack;
 public class StackMachine {
 
   private List<Token> rpnList;
-  private VarTable varTable;
   private TypeTable typeTable;
   private int pos;
   private Stack<Token> stack;
   private boolean newLine;
 
-  public StackMachine(List<Token> rpnList, VarTable varTable, TypeTable typeTable) {
+  public StackMachine(List<Token> rpnList, TypeTable typeTable) {
     this.rpnList = rpnList;
-    this.varTable = varTable;
     this.typeTable = typeTable;
     pos = 0;
     stack = new Stack<>();
     newLine = true;
+  }
+
+  public Stack<Token> getStack() {
+    return this.stack;
   }
 
   public void execute() throws ExecuteException {
@@ -38,10 +40,6 @@ public class StackMachine {
       Token curToken = rpnList.get(pos);
       LexemType curType = curToken.getType();
       String curValue = curToken.getValue();
-
-      // System.out.println("Token: " + curToken);
-      // System.out.println("Stack: " + stack);
-      // System.out.println("VarTable: " + varTable + "\n");
 
       if (curType == LexemType.VAR ||
           curType == LexemType.DIGIT ||
@@ -139,8 +137,8 @@ public class StackMachine {
     checkForVar(variable);
 
     if (value.getType() == LexemType.VAR) {
-      type = varTable.getType(variable.getValue());
-      realValue = varTable.getValue(variable.getValue());
+      type = VarTable.getInstance().getType(variable.getValue());
+      realValue = VarTable.getInstance().getValue(variable.getValue());
     }
     else if (value.getType() == LexemType.TYPE) {
       if (value.getValue().equals("int")) {
@@ -167,7 +165,7 @@ public class StackMachine {
     }
 
 
-    varTable.add(variable.getValue(), type, realValue);
+    VarTable.getInstance().add(variable.getValue(), type, realValue);
   }
 
   private Method findMethod(String name, List<Method> methods) {
@@ -192,7 +190,7 @@ public class StackMachine {
   private void method(String name) throws ExecuteException {
     Token variable = stack.pop();
     checkForVar(variable);
-    String varType = varTable.getType(variable.getValue());
+    String varType = VarTable.getInstance().getType(variable.getValue());
 
     Method realMethod = findMethod(name, typeTable.get(varType));
 
@@ -207,8 +205,8 @@ public class StackMachine {
       Object value = null;
 
       if (arg.getType() == LexemType.VAR) {
-        argType = varTable.getType(arg.getValue());
-        value = varTable.getValue(arg.getValue());
+        argType = VarTable.getInstance().getType(arg.getValue());
+        value = VarTable.getInstance().getValue(arg.getValue());
       }
       else {
         if (arg.getType() == LexemType.DIGIT) {
@@ -229,7 +227,7 @@ public class StackMachine {
     }
     Collections.reverse(args);
 
-    Object res = realMethod.invoke(varTable.getValue(variable.getValue()), args);
+    Object res = realMethod.invoke(VarTable.getInstance().getValue(variable.getValue()), args);
 
     String returnType = realMethod.getReturnType();
     if (returnType.equals("Object")) {
@@ -261,17 +259,22 @@ public class StackMachine {
   }
 
   private int tokenToInt(Token token) throws ExecuteException {
-    checkForVarOfDigit(token);
+      checkForVarOfDigit(token);
 
-    int res;
-    if (token.getType() == LexemType.VAR) {
-      res = (Integer) varTable.getValue(token.getValue());
-    }
-    else {
-      res = Integer.parseInt(token.getValue());
-    }
+      int res;
+      if (token.getType() == LexemType.VAR) {
+        try {
+          res = (Integer) VarTable.getInstance().getValue(token.getValue());
+        }
+        catch (NullPointerException e) {
+          throw new ExecuteException("Variable " + token.getValue() + " wasn't defined");
+        }
+      }
+      else {
+        res = Integer.parseInt(token.getValue());
+      }
 
-    return res;
+      return res;
   }
 
   private void plus() throws ExecuteException {
@@ -363,10 +366,10 @@ public class StackMachine {
     }
 
     if (type.equals("int")) {
-      varTable.add(token.getValue(), "int", Integer.parseInt(str));
+      VarTable.getInstance().add(token.getValue(), "int", Integer.parseInt(str));
     }
     else if (type.equals("str")) {
-      varTable.add(token.getValue(), "str", str);
+      VarTable.getInstance().add(token.getValue(), "str", str);
     }
   }
 
@@ -375,8 +378,8 @@ public class StackMachine {
 
     String str = "";
     if (token.getType() == LexemType.VAR) {
-      String type = varTable.getType(token.getValue());
-      Object value = varTable.getValue(token.getValue());
+      String type = VarTable.getInstance().getType(token.getValue());
+      Object value = VarTable.getInstance().getValue(token.getValue());
       if (type.equals("int")) {
         str = Integer.toString((Integer) value);
       }

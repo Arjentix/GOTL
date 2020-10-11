@@ -10,7 +10,6 @@ import java.util.Stack;
 
 public class RpnTranslator {
   private List<Token> tokens;
-  private VarTable varTable;
 
   private void fromStackToList(Stack<Token> stack, List<Token> list) {
     while (!stack.empty()) {
@@ -18,9 +17,8 @@ public class RpnTranslator {
     }
   }
 
-  public RpnTranslator(List<Token> tokens, VarTable varTable) {
+  public RpnTranslator(List<Token> tokens) {
     this.tokens = tokens;
-    this.varTable = varTable;
   }
 
   public List<Token> getRpn() {
@@ -81,7 +79,7 @@ public class RpnTranslator {
         continue;
       }
 
-      // Processing open paranth
+      // Processing open parenth
       if (curType == LexemType.OPEN_PARENTH) {
         stack.push(curToken);
         continue;
@@ -93,7 +91,7 @@ public class RpnTranslator {
         continue;
       }
 
-      // Processing close paranth
+      // Processing close parenth
       if (curType == LexemType.CLOSE_PARENTH) {
         if (!methodCalled.empty()) {
           rpnList.add(varsWithMethodCalled.pop());
@@ -137,11 +135,11 @@ public class RpnTranslator {
                               Integer.toString(++transitionNumber);
             rpnList.add(new Token(LexemType.VAR, transVar));
             rpnList.add(new Token(LexemType.UNCONDITIONAL_TRANSITION, "!"));
-            varTable.add(transVar, "int",
+            VarTable.getInstance().add(transVar, "int",
                          whileKwPositions.pop());
           }
           // Adding pointer for false transition
-          varTable.add("_p" + Integer.toString(oldTransitionNumber), "int",
+          VarTable.getInstance().add("_p" + Integer.toString(oldTransitionNumber), "int",
                        falseTransitionPointer);
           exprWithTransitions.pop();
         }
