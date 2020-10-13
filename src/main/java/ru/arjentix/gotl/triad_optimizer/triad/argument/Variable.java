@@ -1,4 +1,4 @@
-package ru.arjentix.gotl.triad_optimizer.triad;
+package ru.arjentix.gotl.triad_optimizer.triad.argument;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -2,6 +2,7 @@ package ru.arjentix.gotl.triad_optimizer.triad;
 
 import java.util.List;
 
+import ru.arjentix.gotl.triad_optimizer.triad.argument.*;
 import ru.arjentix.gotl.exception.NotImplementedException;
 import ru.arjentix.gotl.token.Token;
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import ru.arjentix.gotl.triad_optimizer.triad.argument.*;
 import ru.arjentix.gotl.exception.ExecuteException;
 import ru.arjentix.gotl.exception.NotImplementedException;
 import ru.arjentix.gotl.lexer.LexemType;
