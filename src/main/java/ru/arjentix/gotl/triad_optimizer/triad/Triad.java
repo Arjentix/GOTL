@@ -13,15 +13,18 @@ public class Triad {
   private TriadArgument first;
   private TriadArgument second;
   private Token operation;
-  private int pos;
+  private int startPos;
+  private int endPos;
   private boolean changed;
   private int evaluationRes;
 
-  public Triad(TriadArgument first, TriadArgument second, Token operation, int pos) {
+  public Triad(TriadArgument first, TriadArgument second, Token operation,
+              int startPos, int endPos) {
     this.first = first;
     this.second = second;
     this.operation = operation;
-    this.pos = pos;
+    this.startPos = startPos;
+    this.endPos = endPos;
     this.changed = true;
     this.evaluationRes = 0;
   }
@@ -64,12 +67,20 @@ public class Triad {
     changed = true;
   }
 
-  public int getPos() {
-    return pos;
+  public int getStartPos() {
+    return startPos;
   }
 
-  public void setPos(int pos) {
-    this.pos = pos;
+  public int getEndPos() {
+    return endPos;
+  }
+
+  public void setStartPos(int startPos) {
+    this.startPos = startPos;
+  }
+
+  public void setEndPos(int endPos) {
+    this.endPos = endPos;
   }
 
   public String toString() {
