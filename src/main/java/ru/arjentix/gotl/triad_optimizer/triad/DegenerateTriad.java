@@ -4,8 +4,8 @@ import ru.arjentix.gotl.exception.NotImplementedException;
 import ru.arjentix.gotl.token.Token;
 
 public class DegenerateTriad extends Triad {
-  public DegenerateTriad(Digit first, int pos) {
-    super(first, new Digit(0), null, pos);
+  public DegenerateTriad(Digit first, int startPos, int endPos) {
+    super(first, new Digit(0), null, startPos, endPos);
   }
 
   @Override
