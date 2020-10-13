@@ -1,5 +1,7 @@
 package ru.arjentix.gotl.triad_optimizer.triad;
 
+import java.util.List;
+
 import ru.arjentix.gotl.exception.NotImplementedException;
 import ru.arjentix.gotl.token.Token;
 
@@ -26,6 +28,11 @@ public class DegenerateTriad extends Triad {
   @Override
   public void setOperation(Token operation) throws NotImplementedException {
     throw new NotImplementedException("Can't set operation of Degenerate Triad");
+  }
+
+  @Override
+  public List<Token> tokenize() throws NotImplementedException {
+    throw new NotImplementedException("Can't tokenize Degenerate Triad");
   }
 
   @Override

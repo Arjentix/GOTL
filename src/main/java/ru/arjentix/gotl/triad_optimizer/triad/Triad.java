@@ -1,15 +1,17 @@
 package ru.arjentix.gotl.triad_optimizer.triad;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import ru.arjentix.gotl.exception.ExecuteException;
 import ru.arjentix.gotl.exception.NotImplementedException;
+import ru.arjentix.gotl.lexer.LexemType;
 import ru.arjentix.gotl.stack_machine.StackMachine;
 import ru.arjentix.gotl.token.Token;
 import ru.arjentix.gotl.type_table.TypeTable;
 
-public class Triad {
+public class Triad implements Tokenizable {
   private TriadArgument first;
   private TriadArgument second;
   private Token operation;
@@ -31,11 +33,18 @@ public class Triad {
 
   public int evaluate() throws ExecuteException {
     if (changed) {
-      List<Token> rpn = Arrays.asList(first.toToken(), second.toToken(), operation);
-      StackMachine stackMachine = new StackMachine(rpn, new TypeTable());
-      stackMachine.execute();
-      evaluationRes =  Integer.parseInt(stackMachine.getStack().peek().getValue());
-      changed = false;
+      try {
+        List<Token> rpn = first.tokenize();
+        rpn.addAll(second.tokenize());
+        rpn.add(operation);
+        StackMachine stackMachine = new StackMachine(rpn, new TypeTable());
+        stackMachine.execute();
+        evaluationRes =  Integer.parseInt(stackMachine.getStack().peek().getValue());
+        changed = false;
+      }
+      catch (NotImplementedException e) {
+        //...
+      }
     }
     return evaluationRes;
   }
@@ -81,6 +90,21 @@ public class Triad {
 
   public void setEndPos(int endPos) {
     this.endPos = endPos;
+  }
+
+  public List<Token> tokenize() throws NotImplementedException {
+    List<Token> tokens = new ArrayList<>();
+    try {
+      int res = evaluate();
+      tokens.add(new Token(LexemType.DIGIT, Integer.toString(res)));
+    }
+    catch (ExecuteException e) {
+      tokens.addAll(first.tokenize());
+      tokens.addAll(second.tokenize());
+      tokens.add(operation);
+    }
+
+    return tokens;
   }
 
   public String toString() {
