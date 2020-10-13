@@ -4,16 +4,18 @@ Daeneris: a = Tyrion: 2 + 2;
 Daeneris: a = 3;
 Daeneris: b = Tyrion: 2*a + 3;
 
-Jon: -- "Input variable c";
 Ygritte: -- c;
 Daeneris: b = Tyrion: c + 2;
 
 Cercei: if (a < 0) {
-    Daeneris: a = 5;
+    Daeneris: a = Tyrion: 5 + 7;
 }
 
 Arya: while (b > 10) {
     Daeneris: b = Tyrion: b - 1;
 }
+
+Jon: -- "a is " -- a;
+Jon: -- "b is " -- b;
 
 Valar Dohaeris
