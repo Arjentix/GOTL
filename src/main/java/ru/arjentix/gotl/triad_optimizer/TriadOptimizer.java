@@ -38,7 +38,7 @@ public class TriadOptimizer {
     optimizeTriads(triads);
     System.out.println("Optimized triads: " + triads + "\n");
 
-    replaceTriads();
+    replaceTriads(triads);
 
     return rpn;
   }
@@ -47,23 +47,23 @@ public class TriadOptimizer {
     List<Triad> triads = new ArrayList<>();
 
     for (int i = 0; i < rpn.size(); ++i) {
-        Token curToken = rpn.get(i);
-        if (curToken.getType() == LexemType.FALSE_TRANSITION) {
-            // Jumping to the false transition
-            i = ((int) VarTable.getInstance().getValue(rpn.get(i - 1).getValue())) - 1;
-            continue;
-        }
+      Token curToken = rpn.get(i);
+      if (curToken.getType() == LexemType.FALSE_TRANSITION) {
+        // Jumping to the false transition
+        i = ((int) VarTable.getInstance().getValue(rpn.get(i - 1).getValue())) - 1;
+        continue;
+      }
 
-        if (curToken.getType() == LexemType.ASSIGN_OP) {
-            appendTriads(triads, new WrapInt(i));
-        }
+      if (curToken.getType() == LexemType.ASSIGN_OP) {
+        buildTriads(triads, new WrapInt(i));
+      }
     }
 
     return triads;
   }
 
-  private Triad appendTriads(List<Triad> triads, WrapInt pos) {
-    int originalPos = pos.value;
+  private Triad buildTriads(List<Triad> triads, WrapInt pos) {
+    int startPos = pos.value;
     Token operation = rpn.get(pos.value);
     Stack<TriadArgument> args = new Stack<>();
 
@@ -74,14 +74,14 @@ public class TriadOptimizer {
         args.push(buildArgument(curToken));
       }
       else {
-        appendTriads(triads, pos);
+        buildTriads(triads, pos);
         args.push(new TriadRef(triads, triads.size() - 1));
       }
     }
 
     TriadArgument firstArg = args.pop();
     TriadArgument secondArg = args.pop();
-    Triad triad = new Triad(firstArg, secondArg, operation, originalPos);
+    Triad triad = new Triad(firstArg, secondArg, operation, startPos, pos.value);
     triads.add(triad);
     return triad;
   }
@@ -115,7 +115,8 @@ public class TriadOptimizer {
     try {
       Triad triad = triads.get(index);
       int res = triad.evaluate();
-      Triad degTriad = new DegenerateTriad(new Digit(res), triad.getPos());
+      Triad degTriad = new DegenerateTriad(new Digit(res), triad.getStartPos(),
+                                           triad.getEndPos());
       triads.set(index, degTriad);
     }
     catch (ExecuteException e) {
@@ -153,7 +154,16 @@ public class TriadOptimizer {
     }
   }
 
-  private void replaceTriads() {
-    // ..
+  private void replaceTriads(List<Triad> triads) {
+    for (Triad triad : triads) {
+      try {
+        if (triad.getOperation().getType() == LexemType.ASSIGN_OP) {
+
+        }
+      }
+      catch (NotImplementedException e) {
+        //...
+      }
+    }
   }
 }
