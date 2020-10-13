@@ -1,15 +1,11 @@
 package ru.arjentix.gotl.triad_optimizer;
 
+import ru.arjentix.gotl.triad_optimizer.triad.*;
+import ru.arjentix.gotl.triad_optimizer.triad.argument.*;
 import ru.arjentix.gotl.exception.ExecuteException;
 import ru.arjentix.gotl.exception.NotImplementedException;
 import ru.arjentix.gotl.lexer.LexemType;
 import ru.arjentix.gotl.token.Token;
-import ru.arjentix.gotl.triad_optimizer.triad.DegenerateTriad;
-import ru.arjentix.gotl.triad_optimizer.triad.Digit;
-import ru.arjentix.gotl.triad_optimizer.triad.Triad;
-import ru.arjentix.gotl.triad_optimizer.triad.TriadArgument;
-import ru.arjentix.gotl.triad_optimizer.triad.TriadRef;
-import ru.arjentix.gotl.triad_optimizer.triad.Variable;
 import ru.arjentix.gotl.vartable.VarTable;
 
 import java.util.ArrayList;
@@ -63,7 +59,7 @@ public class TriadOptimizer {
   }
 
   private Triad buildTriads(List<Triad> triads, WrapInt pos) {
-    int startPos = pos.value;
+    int endPos = pos.value;
     Token operation = rpn.get(pos.value);
     Stack<TriadArgument> args = new Stack<>();
 
@@ -81,7 +77,7 @@ public class TriadOptimizer {
 
     TriadArgument firstArg = args.pop();
     TriadArgument secondArg = args.pop();
-    Triad triad = new Triad(firstArg, secondArg, operation, startPos, pos.value);
+    Triad triad = new Triad(firstArg, secondArg, operation, pos.value, endPos);
     triads.add(triad);
     return triad;
   }
@@ -159,6 +155,14 @@ public class TriadOptimizer {
       try {
         if (triad.getOperation().getType() == LexemType.ASSIGN_OP) {
 
+          for (int i = triad.getEndPos() - 1; i > triad.getStartPos(); --i) {
+            rpn.set(i, new Token(LexemType.EMPTY_LEXEME, ""));
+          }
+
+          List<Token> secondArgumentTokens = triad.getSecond().tokenize();
+          for (int i = 0; i < secondArgumentTokens.size(); ++i) {
+            rpn.set(triad.getStartPos() + 1 + i, secondArgumentTokens.get(i));
+          }
         }
       }
       catch (NotImplementedException e) {

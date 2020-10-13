@@ -41,6 +41,10 @@ public class StackMachine {
       LexemType curType = curToken.getType();
       String curValue = curToken.getValue();
 
+      if (curType == LexemType.EMPTY_LEXEME) {
+        continue;
+      }
+
       if (curType == LexemType.VAR ||
           curType == LexemType.DIGIT ||
           curType == LexemType.CONST_STRING ||
