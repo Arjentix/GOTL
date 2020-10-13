@@ -36,6 +36,9 @@ public class TriadOptimizer {
 
     replaceTriads(triads);
 
+    adjustTransitions();
+    rpn.removeIf(token -> (token.getType() == LexemType.EMPTY_LEXEME));
+
     return rpn;
   }
 
@@ -169,5 +172,29 @@ public class TriadOptimizer {
         //...
       }
     }
+  }
+
+  private void adjustTransitions() {
+    for (int i = 0; i < rpn.size(); ++i) {
+      if (rpn.get(i).getType() == LexemType.UNCONDITIONAL_TRANSITION ||
+          rpn.get(i).getType() == LexemType.FALSE_TRANSITION) {
+        String transitionVarName = rpn.get(i - 1).getValue();
+        int transitionVarValue = (int) VarTable.getInstance()
+                                               .getValue(transitionVarName);
+        transitionVarValue -= getEmptyLexemCountBeforeIndex(transitionVarValue);
+        VarTable.getInstance().setValue(transitionVarName, transitionVarValue);
+      }
+    }
+  }
+
+  private int getEmptyLexemCountBeforeIndex(int index) {
+    int counter = 0;
+    for (int i = 0; i < index; ++i) {
+      if (rpn.get(i).getType() == LexemType.EMPTY_LEXEME) {
+        ++counter;
+      }
+    }
+
+    return counter;
   }
 }

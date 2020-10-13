@@ -55,9 +55,10 @@ public class GotlUI {
 
     TriadOptimizer optimizer = new TriadOptimizer(rpn);
     optimizer.optimize();
-    System.out.println("Optimized Reverse Polish Notation: " + rpn + "\n");
-
     clearVarTable();
+    System.out.println("Optimized Reverse Polish Notation: " + rpn + "\n");
+    System.out.println("New table of variables: " + VarTable.getInstance() + "\n");
+
     StackMachine stackMachine = new StackMachine(rpn, typeTable);
 
     System.out.println("<----- Program output ----->");
