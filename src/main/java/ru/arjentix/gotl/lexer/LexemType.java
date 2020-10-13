@@ -35,7 +35,8 @@ public enum LexemType {
   UNCONDITIONAL_TRANSITION("", 10),
   INPUT_OP("", 10),
   OUTPUT_OP("", 2),
-  OUTPUT_NEWLINE("", 2);
+  OUTPUT_NEWLINE("", 2),
+  EMPTY_LEXEME("", -1);
 
   private Pattern pattern;
   private int priority;
