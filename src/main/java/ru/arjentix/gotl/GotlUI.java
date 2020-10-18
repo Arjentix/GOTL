@@ -2,6 +2,7 @@ package ru.arjentix.gotl;
 
 import ru.arjentix.gotl.exception.GotlTokenizeException;
 import ru.arjentix.gotl.exception.LangParseException;
+import ru.arjentix.gotl.cacher.Cacher;
 import ru.arjentix.gotl.exception.ExecuteException;
 import ru.arjentix.gotl.lexer.Lexer;
 import ru.arjentix.gotl.parser.Parser;
@@ -21,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 
 public class GotlUI {
@@ -35,30 +35,44 @@ public class GotlUI {
       System.exit(-1);
     }
 
-    String rawInput = Files.readString(Paths.get(args[0]));
+    String filename = args[0];
+    String rawInput = Files.readString(Paths.get(filename));
 
     System.out.println("<----- Iterpretation info ----->");
 
     Lexer lexer = new Lexer(rawInput);
-    System.out.println("\nTokens: " + lexer.getTokens() + "\n");
+    List<Token> tokens = lexer.getTokens();
+    System.out.println("\nTokens: " + tokens + "\n");
 
-    Parser parser = new Parser(lexer.getTokens());
-    parser.lang();
+    int programHash = tokens.hashCode();
 
-    TypeTable typeTable = buildTypeTable();
+    Cacher cacher = new Cacher(programHash, filename);
 
+    List<Token> rpn;
+    if (cacher.findCache()) {
+      System.out.println("Found cache");
+      rpn = cacher.getRpn();
+      cacher.configureVarTable();
+    }
+    else {
+      Parser parser = new Parser(tokens);
+      parser.lang();
 
-    RpnTranslator translator = new RpnTranslator(lexer.getTokens());
-    List<Token> rpn = translator.getRpn();
-    System.out.println("Reverse Polish Notation: " + rpn + "\n");
-    System.out.println("Table of variables: " + VarTable.getInstance() + "\n");
+      RpnTranslator translator = new RpnTranslator(lexer.getTokens());
+      rpn = translator.getRpn();
+      System.out.println("Reverse Polish Notation: " + rpn + "\n");
+      System.out.println("Table of variables: " + VarTable.getInstance() + "\n");
 
-    TriadOptimizer optimizer = new TriadOptimizer(rpn);
-    optimizer.optimize();
-    clearVarTable();
+      TriadOptimizer optimizer = new TriadOptimizer(rpn);
+      optimizer.optimize();
+      clearVarTable();
+
+      cacher.writeCache(programHash, rpn);
+    }
     System.out.println("Optimized Reverse Polish Notation: " + rpn + "\n");
     System.out.println("New table of variables: " + VarTable.getInstance() + "\n");
 
+    TypeTable typeTable = buildTypeTable();
     StackMachine stackMachine = new StackMachine(rpn, typeTable);
 
     System.out.println("<----- Program output ----->");
