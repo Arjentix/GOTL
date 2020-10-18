@@ -62,7 +62,6 @@ public class TriadOptimizer {
   }
 
   private void buildTriads(List<Triad> triads, WrapInt pos) {
-    System.out.println(indentStr + "buildTriads()");
     int endPos = pos.value;
     Token operation = rpn.get(pos.value);
     Stack<TriadArgument> args = new Stack<>();
