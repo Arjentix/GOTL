@@ -14,6 +14,7 @@ import java.util.Stack;
 
 public class TriadOptimizer {
   private List<Token> rpn;
+  private int indent;
 
   private class WrapInt {
     int value;
@@ -25,6 +26,7 @@ public class TriadOptimizer {
 
   public TriadOptimizer(List<Token> rpn) {
     this.rpn = rpn;
+    this.indent = 0;
   }
 
   public List<Token> optimize() {
@@ -61,20 +63,33 @@ public class TriadOptimizer {
     return triads;
   }
 
-  private Triad buildTriads(List<Triad> triads, WrapInt pos) {
+  private void buildTriads(List<Triad> triads, WrapInt pos) {
+    String indentStr = "";
+    for (int i = 0; i < indent; ++i) {
+      indentStr = indentStr + " ";
+    }
+    System.out.println(indentStr + "buildTriads()");
     int endPos = pos.value;
     Token operation = rpn.get(pos.value);
     Stack<TriadArgument> args = new Stack<>();
 
     for (int i = 0; i < 2; ++i) {
       Token curToken = rpn.get(--pos.value);
-      if (curToken.getType() == LexemType.DIGIT ||
-          curToken.getType() == LexemType.VAR) {
+      LexemType curType = curToken.getType();
+      System.out.println(indentStr + "CurToken: " + curToken);
+      if (curType == LexemType.DIGIT ||
+          curType == LexemType.VAR) {
         args.push(buildArgument(curToken));
       }
-      else {
+      else if (curType == LexemType.PLUS_MINUS ||
+               curType == LexemType.MULT_DIV ||
+               curType == LexemType.LOGIC_OP) {
+        ++indent;
         buildTriads(triads, pos);
         args.push(new TriadRef(triads, triads.size() - 1));
+      }
+      else {
+        return;
       }
     }
 
@@ -82,7 +97,7 @@ public class TriadOptimizer {
     TriadArgument secondArg = args.pop();
     Triad triad = new Triad(firstArg, secondArg, operation, pos.value, endPos);
     triads.add(triad);
-    return triad;
+    --indent;
   }
 
   private TriadArgument buildArgument(Token token) {
