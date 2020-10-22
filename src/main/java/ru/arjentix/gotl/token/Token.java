@@ -30,6 +30,22 @@ public class Token {
     return a * x * x + b;
   }
 
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    Token other = (Token) obj;
+
+    return type == other.type && value.equals(other.value);
+  }
+
   public String toString() {
     return this.getType() + " : \"" + this.getValue() + "\"";
   }
