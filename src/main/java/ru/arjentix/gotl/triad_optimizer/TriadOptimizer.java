@@ -9,7 +9,9 @@ import ru.arjentix.gotl.token.Token;
 import ru.arjentix.gotl.vartable.VarTable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 public class TriadOptimizer {
@@ -33,6 +35,9 @@ public class TriadOptimizer {
 
     optimizeTriads(triads);
     System.out.println("Optimized triads: " + triads + "\n");
+
+    excludeUnnecessaryOperations(triads);
+    System.out.println("Triads without unnecessary operations: " + triads + "\n");
 
     replaceTriads(triads);
 
@@ -156,6 +161,129 @@ public class TriadOptimizer {
     catch (NotImplementedException | ExecuteException e) {
       //...
     }
+  }
+
+  private void excludeUnnecessaryOperations(List<Triad> triads) {
+    Map<TriadArgument, Integer> numbersOfDependencies = buildNumbersOfDependencies(triads);
+
+    replaceWithSameTriads(triads, numbersOfDependencies);
+    System.out.println("Triads after excluding algorithm: " + triads + "\n");
+
+    fixRefsToTriad(triads);
+    triads.removeIf(triad -> (triad instanceof SameTriad));
+  }
+
+  private Map<TriadArgument, Integer> buildNumbersOfDependencies(List<Triad> triads) {
+    Map<TriadArgument, Integer> numbersOfDependencies = new HashMap<>();
+
+    for (int i = 0; i < triads.size(); ++i) {
+      Triad curTriad = triads.get(i);
+      if (curTriad instanceof DegenerateTriad) {
+        continue;
+      }
+      int firstNumber = getNumberOfDependencies(numbersOfDependencies,
+                                                curTriad.getFirst());
+      int secondNumber = getNumberOfDependencies(numbersOfDependencies,
+                                                 curTriad.getSecond());
+      numbersOfDependencies.put(new TriadRef(triads, i), Math.max(firstNumber, secondNumber) + 1);
+      
+      try {
+        if (curTriad.getOperation().getType() == LexemType.ASSIGN_OP) {
+          numbersOfDependencies.put(curTriad.getFirst(), i + 1);
+        }
+      }
+      catch (NotImplementedException ex) {
+        //...
+      }
+    }
+
+    return numbersOfDependencies;
+  }
+
+  private int getNumberOfDependencies(
+    Map<TriadArgument, Integer> numbersOfDependencies,
+    TriadArgument arg) {
+    if (arg instanceof Digit) {
+      return 0;
+    }
+
+    Integer number = numbersOfDependencies.get(arg);
+    if (number == null) {
+      numbersOfDependencies.put(arg, 0);
+      number = 0;
+    }
+
+    return number.intValue();
+  }
+
+  private void replaceWithSameTriads(List<Triad> triads, Map<TriadArgument, Integer> numbersOfDependencies) {
+    for (int i = 0; i < triads.size(); ++i) {
+      Triad iTriad = triads.get(i);
+      if (iTriad instanceof DegenerateTriad || iTriad instanceof SameTriad) {
+        continue;
+      }
+      for (int j = i + 1; j < triads.size(); ++j) {
+        Triad jTriad = triads.get(j);
+        if (jTriad instanceof DegenerateTriad || jTriad instanceof SameTriad) {
+          continue;
+        }
+        try {
+
+          if (iTriad.getFirst().equals(jTriad.getFirst()) &&
+              iTriad.getSecond().equals(jTriad.getSecond()) &&
+              iTriad.getOperation().equals(jTriad.getOperation()) &&
+              (numbersOfDependencies.get(new TriadRef(triads, i)).compareTo(
+               numbersOfDependencies.get(new TriadRef(triads, j))) == 0)) {
+            triads.set(j, new SameTriad(jTriad, i));
+          }
+        }
+        catch (NotImplementedException ex) {
+          //...
+        }
+      }
+    }
+  }
+
+  private void fixRefsToTriad(List<Triad> triads) {
+    for (int i = 0; i < triads.size(); ++i) {
+      try {
+        Triad curTriad = triads.get(i);
+        curTriad.setFirst(getFixedTriadArgument(triads, curTriad.getFirst()));
+        curTriad.setSecond(getFixedTriadArgument(triads, curTriad.getSecond()));
+        triads.set(i, curTriad);
+      }
+      catch (NotImplementedException ex) {
+        //...
+      }
+    }
+  }
+
+  private TriadArgument getFixedTriadArgument(List<Triad> triads, TriadArgument arg) {
+    if (arg instanceof TriadRef) {
+      TriadRef triadRef = (TriadRef) arg;
+      if (triads.get(triadRef.getIndex()) instanceof SameTriad) {
+        SameTriad sameTriad = (SameTriad) triads.get(triadRef.getIndex());
+        triadRef.setIndex(sameTriad.getSameTriadNumber());
+      }
+
+      int index = triadRef.getIndex();
+      triadRef.setIndex(index - getSameTriadCountBeforeIndex(triads, index));
+
+      return triadRef;
+    }
+
+    return arg;
+  }
+
+  private int getSameTriadCountBeforeIndex(List<Triad> triads, int index) {
+    int counter = 0;
+    for (int i = 0; i < index; ++i) {
+      if (triads.get(i) instanceof SameTriad) {
+        ++counter;
+      }
+    }
+
+    return counter;
   }
 
   private void replaceTriads(List<Triad> triads) {
