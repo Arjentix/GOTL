@@ -7,4 +7,8 @@ public abstract class TriadArgument implements Tokenizable {
     public abstract int getValue() throws ExecuteException;
 
     public abstract String toString();
+
+    public abstract int hashCode();
+
+    public abstract boolean equals(Object obj);
 }

@@ -1,7 +1,6 @@
 package ru.arjentix.gotl.triad_optimizer.triad;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import ru.arjentix.gotl.triad_optimizer.triad.argument.*;
@@ -106,6 +105,35 @@ public class Triad implements Tokenizable {
     }
 
     return tokens;
+  }
+
+  @Override
+  public int hashCode() {
+    final int a = first.hashCode();
+    final int b = second.hashCode();
+    final int c = operation.hashCode();
+    final int d = startPos;
+    final int e = endPos;
+    final int x = 111;
+
+    return (int) (a*Math.pow(x, 4) + b*Math.pow(x, 3) + c*Math.pow(x, 2) + d*x + e);
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    Triad other = (Triad) obj;
+
+    return (first.equals(other.first) && second.equals(other.second) &&
+            operation.equals(other.operation) && startPos == other.startPos && endPos == other.endPos);
   }
 
   public String toString() {

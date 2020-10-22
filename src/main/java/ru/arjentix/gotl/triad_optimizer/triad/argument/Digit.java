@@ -28,4 +28,25 @@ public class Digit extends TriadArgument {
     public String toString() {
         return Integer.toString(value);
     }
+
+    @Override
+    public int hashCode() {
+      return value;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (getClass() != obj.getClass()) {
+        return false;
+      }
+      Digit other = (Digit) obj;
+
+      return value == other.value;
+    }
 }
