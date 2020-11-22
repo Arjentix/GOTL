@@ -9,7 +9,7 @@ Ygritte: -- c;
 Daeneris: b = Tyrion: c + 2;
 
 Cercei: if (b > 0) {
-    Daeneris: a = b;
+    Daeneris: a = 20;
 }
 Daeneris: e = Tyrion: 2*a;
 
