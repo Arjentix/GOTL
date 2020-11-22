@@ -39,7 +39,7 @@ public class Triad implements Tokenizable {
         rpn.add(operation);
         StackMachine stackMachine = new StackMachine(rpn, new TypeTable());
         stackMachine.execute();
-        evaluationRes =  Integer.parseInt(stackMachine.getStack().peek().getValue());
+        evaluationRes = Integer.parseInt(stackMachine.getStack().peek().getValue());
         changed = false;
       }
       catch (NotImplementedException e) {
