@@ -134,8 +134,8 @@ public class TriadOptimizer {
   }
 
   private void optimizeAssignment(List<Triad> triads, int index) {
+    Triad triad = triads.get(index);
     try {
-      Triad triad = triads.get(index);
       int digit = 0;
       if (triad.getSecond() instanceof Digit) {
         digit = triad.getSecond().getValue();
@@ -149,6 +149,7 @@ public class TriadOptimizer {
       else if (triad.getSecond() instanceof Variable) {
         String varName = triad.getSecond().toString();
         if (!VarTable.getInstance().contains(varName)) {
+          VarTable.getInstance().remove(triad.getFirst().toString());
           return;
         }
         digit = (int) VarTable.getInstance().getValue(varName);
@@ -159,7 +160,7 @@ public class TriadOptimizer {
       VarTable.getInstance().add(triad.getFirst().toString(), digit);
     }
     catch (NotImplementedException | ExecuteException e) {
-      //...
+      VarTable.getInstance().remove(triad.getFirst().toString());
     }
   }
 
