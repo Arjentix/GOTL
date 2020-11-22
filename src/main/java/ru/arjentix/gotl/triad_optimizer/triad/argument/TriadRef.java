@@ -20,7 +20,7 @@ public class TriadRef extends TriadArgument {
   }
 
   @Override
-  public int getValue() throws ExecuteException {
+  public int getValue() throws ExecuteException, NotImplementedException {
       return triads.get(index).evaluate();
   }
 

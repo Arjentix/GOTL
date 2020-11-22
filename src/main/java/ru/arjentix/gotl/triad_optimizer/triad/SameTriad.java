@@ -22,7 +22,7 @@ public class SameTriad extends Triad {
   }
   
   @Override
-  public int evaluate() throws ExecuteException {
+  public int evaluate() throws ExecuteException, NotImplementedException {
     return oldTriad.evaluate();
   }
 

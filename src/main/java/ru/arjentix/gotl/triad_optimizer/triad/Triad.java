@@ -31,7 +31,7 @@ public class Triad implements Tokenizable {
     this.evaluationRes = 0;
   }
 
-  public int evaluate() throws ExecuteException {
+  public int evaluate() throws ExecuteException, NotImplementedException {
     if (changed) {
       try {
         List<Token> rpn = first.tokenize();

@@ -49,17 +49,42 @@ public class TriadOptimizer {
 
   private List<Triad> findTriads() {
     List<Triad> triads = new ArrayList<>();
+    boolean inIfOrLoop = false;
+    int jumpPos = 0;
 
     for (int i = 0; i < rpn.size(); ++i) {
       Token curToken = rpn.get(i);
       if (curToken.getType() == LexemType.FALSE_TRANSITION) {
-        // Jumping to the false transition
-        i = ((int) VarTable.getInstance().getValue(rpn.get(i - 1).getValue())) - 1;
-        continue;
+        if (!inIfOrLoop) {
+          jumpPos = ((int) VarTable.getInstance().getValue(rpn.get(i - 1).getValue()));
+        }
+        inIfOrLoop = true;
+      }
+      if (i == jumpPos) {
+        inIfOrLoop = false;
       }
 
       if (curToken.getType() == LexemType.ASSIGN_OP) {
-        buildTriads(triads, new WrapInt(i));
+        if (!inIfOrLoop) {
+          buildTriads(triads, new WrapInt(i));
+        }
+        else {
+          List<Triad> tmpTriads = new ArrayList<>();
+          List<String> foundVars = new ArrayList<>();
+          buildTriads(tmpTriads, new WrapInt(i));
+          for (Triad tmpTriad : tmpTriads) {
+            try {
+              if ((tmpTriad.getOperation().getType() == LexemType.ASSIGN_OP) &&
+                  (!foundVars.contains(tmpTriad.getFirst().toString()))) {
+                triads.add(new DeleteIfExistTriad((Variable)tmpTriad.getFirst()));
+                foundVars.add(tmpTriad.getFirst().toString());
+              }
+            }
+            catch (NotImplementedException e) {
+              // ...
+            }
+          }
+        }
       }
     }
 
@@ -115,7 +140,9 @@ public class TriadOptimizer {
         }
       }
       catch (NotImplementedException ex) {
-        //...
+        if (triad instanceof DeleteIfExistTriad) {
+          VarTable.getInstance().remove(triad.getFirst().toString());
+        }
       }
     }
   }
@@ -128,7 +155,7 @@ public class TriadOptimizer {
                                            triad.getEndPos());
       triads.set(index, degTriad);
     }
-    catch (ExecuteException e) {
+    catch (ExecuteException | NotImplementedException e) {
       //...
     }
   }
