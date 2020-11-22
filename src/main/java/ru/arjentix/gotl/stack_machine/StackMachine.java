@@ -137,8 +137,8 @@ public class StackMachine {
     checkForVar(variable);
 
     if (value.getType() == LexemType.VAR) {
-      type = VarTable.getInstance().getType(variable.getValue());
-      realValue = VarTable.getInstance().getValue(variable.getValue());
+      type = VarTable.getInstance().getType(value.getValue());
+      realValue = VarTable.getInstance().getValue(value.getValue());
     }
     else if (value.getType() == LexemType.TYPE) {
       if (value.getValue().equals("int")) {
