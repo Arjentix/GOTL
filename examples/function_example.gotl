@@ -8,20 +8,32 @@ Rglor: @printArg(arg) {
     Jon: -- "arg: " -- arg;
 }
 
+Daeneris: c = "This is c";
+
 Rglor: @sum(a, b) {
-    return Tyrion:a + b;
+    c = Tyrion: a + b;
+    return c;
+}
+
+Rglor: @max(a, b) {
+    Cercei: if (a > b) {
+        return a;
+    }
+
+    return b;
 }
 
 @printHello();
 
-Jon: -- "Enter arg";
-Ygritte: -- arg;
-@printArg(arg);
+@printArg(c);
 
 Jon: -- "Enter a";
 Ygritte: -- a;
 Jon: -- "Enter b";
 Ygritte: -- b;
 Jon: -- "Sum: " -- @sum(a, b);;
+Jon: -- "Max: " -- @max(a, b);;
+
+@printArg(c);
 
 Valar Dohaeris
