@@ -71,6 +71,14 @@ public class VarTable {
     return hashMap.keySet();
   }
 
+  public Map<String, VarData> getData() {
+    return hashMap;
+  }
+
+  public void setData(Map<String, VarData> data) {
+    hashMap = new HashMap<>(data);
+  }
+
   public String toString() {
     StringBuilder builder = new StringBuilder("{");
     boolean first = true;
