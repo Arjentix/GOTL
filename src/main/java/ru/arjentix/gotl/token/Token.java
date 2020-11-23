@@ -21,6 +21,10 @@ public class Token {
     return value;
   }
 
+  public void setValue(String value) {
+    this.value = value;
+  }
+
   @Override
   public int hashCode() {
     final int a = type.hashCode();
