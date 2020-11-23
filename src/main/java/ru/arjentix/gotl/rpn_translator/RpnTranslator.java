@@ -45,6 +45,9 @@ public class RpnTranslator {
       else if (curType == LexemType.CLOSE_BRACKET) {
         --unclosedBracketsCount;
       }
+      else if (curType == LexemType.VAR) {
+        curToken.setValue(funcName + "_" + curToken.getValue());
+      }
 
       funcBody.add(curToken);
     }
