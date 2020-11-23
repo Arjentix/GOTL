@@ -11,7 +11,7 @@ Rglor: @printArg(arg) {
 Daeneris: c = "This is c";
 
 Rglor: @sum(a, b) {
-    c = Tyrion: a + b;
+    Daeneris: c = Tyrion: a + b;
     return c;
 }
 
