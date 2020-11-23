@@ -1,11 +1,11 @@
 lang -> VALAR_MORGHULIS expr+ VALAR_DOHAERIS
-expr -> function_decl|function_call|method_call|assign_expr|cond_expr|while_expr|input_expr|output_expr
+expr -> function_decl|function_call|method_call|assign_expr|cond_expr|while_expr|input_expr|output_expr|return_expr
 assign_expr -> DAENERIS VAR ASSIGN_OP assign_value SEMICOLON
 assign_value -> value_expr|TYPE|CONST_STRING
 value_expr -> VAR|DIGIT|arithm_expr|method_call|function_call
 function_decl -> RGLOR FUNCTION OPEN_PARANTH param_list? CLOSE_PARANTH OPEN_BRACKET body CLOSE_BRACKET
 param_list -> VAR (COMMA VAR)*
-         function_call -> FUNCTION OPEN_PARANTH arg_list? CLOSE_PARANTH SEMICOLON
+function_call -> FUNCTION OPEN_PARANTH arg_list? CLOSE_PARANTH SEMICOLON
 method_call -> VAR METHOD OPEN_PARANTH arg_list? CLOSE_PARANTH SEMICOLON
 arg_list -> value_expr (COMMA value_expr|CONST_STRING)*
 arithm_expr -> TYRION arithm_body
@@ -21,6 +21,7 @@ while_head -> WHILE_KW logical_head
 input_expr -> YGRITTE (INPUT_OUTPUT_OP VAR)+ SEMICOLON
 output_expr -> JON (INPUT_OUTPUT_OP output_value)+ SEMICOLON
 output_value -> value_expr|CONST_STRING
+return_expr -> RETURN_KW value_expr|CONST_STRING SEMICOLON
 
 VALAR_MORGHULIS -> Valar Morghulis
 VALAR_DOHAERIS -> Valar Dohaeris
@@ -44,6 +45,7 @@ LOGIC_OP -> >|<|==|>=|<=
 CONST_STRING -> "[^"]*"
 IF_KW = if
 WHILE_KW = while
+RETURN_KW = return
 OPEN_PARANTH -> (
 CLOSE_PARANTH -> )
 OPEN_BRACKET -> {

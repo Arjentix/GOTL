@@ -71,6 +71,7 @@ public class Parser {
     expressions.add((arg) -> {return whileExpr();});
     expressions.add((arg) -> {return inputExpr();});
     expressions.add((arg) -> {return outputExpr();});
+    expressions.add((arg) -> {return returnExpr();});
 
     return orOperation(expressions);
   }
@@ -187,6 +188,24 @@ public class Parser {
 
   private ParseResult comma() {
     return matchToken(match(), LexemType.COMMA);
+  }
+
+  private ParseResult returnExpr() {
+    List<Function<Object, ParseResult>> expressions = new ArrayList<>();
+    expressions.add((arg0) -> {return returnKeyword();});
+    expressions.add((arg0) -> {
+      List<Function<Object, ParseResult>> orExpressions = new ArrayList<>();
+      orExpressions.add((arg1) -> {return valueExpr();});
+      orExpressions.add((arg1) -> {return constString();});
+      return orOperation(orExpressions);
+    });
+    expressions.add((arg0) -> {return semicolon();});
+
+    return andOperation(expressions);
+  }
+
+  private ParseResult returnKeyword() {
+    return matchToken(match(), LexemType.RETURN_KW);
   }
 
   private ParseResult valueExpr() {

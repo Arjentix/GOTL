@@ -24,6 +24,7 @@ public enum LexemType {
   CONST_STRING("\"[^\"]*\"", 0),
   IF_KW("if", 5),
   WHILE_KW("while", 5),
+  RETURN_KW("return", 5),
   SEMICOLON("\\;", 10),
   OPEN_PARENTH("\\(", 1),
   CLOSE_PARENTH("\\)", 1),
