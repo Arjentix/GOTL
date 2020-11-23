@@ -114,9 +114,7 @@ public class Parser {
     expressions.add((arg0) -> {return openParanth();});
     expressions.add((arg0) -> {return questionMarkOperation((arg1) -> {return paramList();});});
     expressions.add((arg0) -> {return closeParanth();});
-    expressions.add((arg0) -> {return openBracket();});
     expressions.add((arg0) -> {return body();});
-    expressions.add((arg0) -> {return closeBracket();});
 
     return andOperation(expressions);
   }
