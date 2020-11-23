@@ -1,5 +1,7 @@
 package ru.arjentix.gotl.rpn_translator;
 
+import ru.arjentix.gotl.function_table.Function;
+import ru.arjentix.gotl.function_table.FunctionTable;
 import ru.arjentix.gotl.lexer.LexemType;
 import ru.arjentix.gotl.token.Token;
 import ru.arjentix.gotl.vartable.VarTable;
@@ -21,6 +23,38 @@ public class RpnTranslator {
     this.tokens = tokens;
   }
 
+  private int extractFunction(int pos) {
+    String funcName = tokens.get(pos + 1).getValue();
+    int argsCount = 0;
+    for (pos += 3; tokens.get(pos).getType() != LexemType.CLOSE_PARENTH; ++pos) {
+      System.out.println("Cur token is " + tokens.get(pos));
+      if (tokens.get(pos).getType() != LexemType.COMMA) {
+        ++argsCount;
+      }
+    }
+
+    List<Token> funcBody = new ArrayList<>();
+    int unclosedBracketsCount = 1;
+    for (pos += 2; unclosedBracketsCount != 0; ++pos) {
+      Token curToken = tokens.get(pos);
+      LexemType curType = curToken.getType();
+
+      if (curType == LexemType.OPEN_BRACKET) {
+        ++unclosedBracketsCount;
+      }
+      else if (curType == LexemType.CLOSE_BRACKET) {
+        --unclosedBracketsCount;
+      }
+
+      funcBody.add(curToken);
+    }
+    funcBody.remove(funcBody.size() - 1); // Removing last bracket
+
+    FunctionTable.getInstance().put(funcName, new Function(argsCount, funcBody));
+
+    return pos - 1;
+  }
+
   public List<Token> getRpn() {
     List<Token> rpnList = new ArrayList<>();
     Stack<Token> stack = new Stack<>();
@@ -31,8 +65,14 @@ public class RpnTranslator {
     int transitionNumber = 0;
     boolean wasInput = false; // true -- was "Jon" token, false -- was "Ygritte" token
 
-    for (Token curToken : tokens) {
+    for (int i = 0; i < tokens.size(); ++i) {
+      Token curToken = tokens.get(i);
       LexemType curType = curToken.getType();
+
+      if (curType == LexemType.RGLOR) {
+        i = extractFunction(i);
+        continue;
+      }
 
       // Skipping tokens with priority < 0
       if (curType.getPriority() < 0) {
