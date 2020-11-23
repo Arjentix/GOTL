@@ -1,0 +1,27 @@
+Valar Morghulis
+
+Rglor: @printHello() {
+    Jon: -- "Hello";
+}
+
+Rglor: @printArg(arg) {
+    Jon: -- "arg: " -- arg;
+}
+
+Rglor: @sum(a, b) {
+    return Tyrion:a + b;
+}
+
+@printHello();
+
+Jon: -- "Enter arg";
+Ygritte: -- arg;
+@printArg(arg);
+
+Jon: -- "Enter a";
+Ygritte: -- a;
+Jon: -- "Enter b";
+Ygritte: -- b;
+Jon: -- "Sum: " -- @sum(a, b);;
+
+Valar Dohaeris
