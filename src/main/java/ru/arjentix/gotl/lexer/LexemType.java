@@ -10,6 +10,7 @@ public enum LexemType {
   TYRION("Tyrion\\:", -1),
   CERCEI("Cercei\\:", -1),
   ARYA("Arya\\:", -1),
+  RGLOR("Rglor:", -1),
   JON("Jon\\:", 0),
   YGRITTE("Ygritte\\:", 0),
   COMMA(",", -1),
@@ -28,6 +29,7 @@ public enum LexemType {
   CLOSE_PARENTH("\\)", 1),
   OPEN_BRACKET("\\{", 1),
   CLOSE_BRACKET("\\}", 1),
+  FUNCTION("\\@[a-zA-z]+", 5),
   METHOD("\\.[a-zA-z]+", 5),
   VAR("[a-zA-z]+", 0),
   // Types for RPN

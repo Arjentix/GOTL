@@ -63,8 +63,10 @@ public class Parser {
 
   private ParseResult expr() {
     List<Function<Object, ParseResult>> expressions = new ArrayList<>();
-    expressions.add((arg) -> {return assignExpr();});
+    expressions.add((arg) -> {return functionDecl();});
+    expressions.add((arg) -> {return functionCall();});
     expressions.add((arg) -> {return methodCall();});
+    expressions.add((arg) -> {return assignExpr();});
     expressions.add((arg) -> {return condExpr();});
     expressions.add((arg) -> {return whileExpr();});
     expressions.add((arg) -> {return inputExpr();});
@@ -103,6 +105,52 @@ public class Parser {
 
   private ParseResult assignOp() {
     return matchToken(match(), LexemType.ASSIGN_OP);
+  }
+
+  private ParseResult functionDecl() {
+    List<Function<Object, ParseResult>> expressions = new ArrayList<>();
+    expressions.add((arg0) -> {return rglor();});
+    expressions.add((arg0) -> {return function();});
+    expressions.add((arg0) -> {return openParanth();});
+    expressions.add((arg0) -> {return questionMarkOperation((arg1) -> {return paramList();});});
+    expressions.add((arg0) -> {return closeParanth();});
+    expressions.add((arg0) -> {return openBracket();});
+    expressions.add((arg0) -> {return body();});
+    expressions.add((arg0) -> {return closeBracket();});
+
+    return andOperation(expressions);
+  }
+
+  private ParseResult functionCall() {
+    List<Function<Object, ParseResult>> expressions = new ArrayList<>();
+    expressions.add((arg0) -> {return function();});
+    expressions.add((arg0) -> {return openParanth();});
+    expressions.add((arg0) -> {return questionMarkOperation((arg1) -> {return argList();});});
+    expressions.add((arg0) -> {return closeParanth();});
+    expressions.add((arg0) -> {return semicolon();});
+
+    return andOperation(expressions);
+  }
+
+  private ParseResult rglor() {
+    return matchToken(match(), LexemType.RGLOR);
+  }
+
+  private ParseResult function() {
+    return matchToken(match(), LexemType.FUNCTION);
+  }
+
+  private ParseResult paramList() {
+    List<Function<Object, ParseResult>> expressions = new ArrayList<>();
+    expressions.add((arg0) -> {return var();});
+    expressions.add((arg0) -> {
+      List<Function<Object, ParseResult>> starExpressions = new ArrayList<>();
+      starExpressions.add((arg1) -> {return comma();});
+      starExpressions.add((arg1) -> {return var();});
+      return starOperation((arg1) -> {return andOperation(starExpressions);});
+    });
+
+    return andOperation(expressions);
   }
 
   private ParseResult methodCall() {
@@ -145,6 +193,7 @@ public class Parser {
 
   private ParseResult valueExpr() {
     List<Function<Object, ParseResult>> expressions = new ArrayList<>();
+    expressions.add((arg0) -> {return functionCall();});
     expressions.add((arg0) -> {return methodCall();});
     expressions.add((arg0) -> {return var();});
     expressions.add((arg0) -> {return digit();});
