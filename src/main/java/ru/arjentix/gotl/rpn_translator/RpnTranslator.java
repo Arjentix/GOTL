@@ -27,7 +27,6 @@ public class RpnTranslator {
     String funcName = tokens.get(pos + 1).getValue();
     int argsCount = 0;
     for (pos += 3; tokens.get(pos).getType() != LexemType.CLOSE_PARENTH; ++pos) {
-      System.out.println("Cur token is " + tokens.get(pos));
       if (tokens.get(pos).getType() != LexemType.COMMA) {
         ++argsCount;
       }
