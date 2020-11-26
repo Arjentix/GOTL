@@ -5,16 +5,16 @@ import java.util.List;
 import ru.arjentix.gotl.token.Token;
 
 public class Function {
-  private int argsCount;
+  private List<String> args;
   private List<Token> body;
 
-  public Function(int argsCount, List<Token> body) {
-    this.argsCount = argsCount;
+  public Function(List<String> args, List<Token> body) {
+    this.args = args;
     this.body = body;
   }
 
-  public int getArgsCount() {
-    return argsCount;
+  public List<String> getArgs() {
+    return args;
   }
 
   public List<Token> getBody() {
@@ -22,7 +22,7 @@ public class Function {
   }
 
   public String toString() {
-    return "args count = " + argsCount + ", body = " + body;
+    return "args = " + args + ", body = " + body;
   }
 
 }

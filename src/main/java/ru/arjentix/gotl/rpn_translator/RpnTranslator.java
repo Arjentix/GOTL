@@ -25,14 +25,30 @@ public class RpnTranslator {
 
   private int extractFunction(int pos) {
     String funcName = tokens.get(pos + 1).getValue();
-    int argsCount = 0;
+
+    List<String> args = new ArrayList<>();
+    pos = extractFunctionArgs(pos, funcName, args);
+
+    List<Token> funcBody = new ArrayList<>();
+    pos = extractFunctionBody(pos, funcName, funcBody);
+
+    FunctionTable.getInstance().put(funcName, new Function(args, funcBody));
+
+    return pos - 1;
+  }
+
+  private int extractFunctionArgs(int pos, String funcName, List<String> args) {
     for (pos += 3; tokens.get(pos).getType() != LexemType.CLOSE_PARENTH; ++pos) {
-      if (tokens.get(pos).getType() != LexemType.COMMA) {
-        ++argsCount;
+      Token curToken = tokens.get(pos);
+      if (curToken.getType() == LexemType.VAR) {
+        args.add(constructVariableName(funcName, curToken.getValue()));
       }
     }
 
-    List<Token> funcBody = new ArrayList<>();
+    return pos;
+  }
+
+  private int extractFunctionBody(int pos, String funcName, List<Token> funcBody) {
     int unclosedBracketsCount = 1;
     for (pos += 2; unclosedBracketsCount != 0; ++pos) {
       Token curToken = tokens.get(pos);
@@ -45,16 +61,18 @@ public class RpnTranslator {
         --unclosedBracketsCount;
       }
       else if (curType == LexemType.VAR) {
-        curToken.setValue(funcName + "_" + curToken.getValue());
+        curToken.setValue(constructVariableName(funcName, curToken.getValue()));
       }
 
       funcBody.add(curToken);
     }
     funcBody.remove(funcBody.size() - 1); // Removing last bracket
 
-    FunctionTable.getInstance().put(funcName, new Function(argsCount, funcBody));
+    return pos;
+  }
 
-    return pos - 1;
+  private String constructVariableName(String funcName, String varName) {
+    return funcName + "_" + varName;
   }
 
   public List<Token> getRpn() {
