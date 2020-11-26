@@ -49,6 +49,7 @@ public class RpnTranslator {
   }
 
   private int extractFunctionBody(int pos, String funcName, List<Token> funcBody) {
+    List<Token> nonRpnBody = new ArrayList<>();
     int unclosedBracketsCount = 1;
     for (pos += 2; unclosedBracketsCount != 0; ++pos) {
       Token curToken = tokens.get(pos);
@@ -64,9 +65,15 @@ public class RpnTranslator {
         curToken.setValue(constructVariableName(funcName, curToken.getValue()));
       }
 
-      funcBody.add(curToken);
+      nonRpnBody.add(curToken);
     }
-    funcBody.remove(funcBody.size() - 1); // Removing last bracket
+    nonRpnBody.remove(nonRpnBody.size() - 1); // Removing last bracket
+
+    // Making RPN
+    List<Token> tokensCopy = this.tokens;
+    this.tokens = nonRpnBody;
+    funcBody.addAll(getRpn());
+    this.tokens = tokensCopy;
 
     return pos;
   }

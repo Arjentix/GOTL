@@ -17,6 +17,10 @@ public class Token {
     return type;
   }
 
+  public void setType(LexemType type) {
+    this.type = type;
+  }
+
   public String getValue() {
     return value;
   }

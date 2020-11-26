@@ -18,13 +18,14 @@ import java.util.Stack;
 
 public class StackMachine {
 
-  private enum State {
+  public enum State {
     NORMAL,
     FUNCTION_CALL,
+    FUNCTION_END,
     RETURN_CALL;
   }
 
-  private class Context {
+  public static class Context {
     public List<Token> rpnList;
     public int pos;
     public Stack<Token> stack;
@@ -51,6 +52,7 @@ public class StackMachine {
 
   public void setContext(Context context) {
     this.context = context;
+    VarTable.getInstance().setData(this.context.varTableData);
   }
 
   public State getState() {
@@ -143,6 +145,10 @@ public class StackMachine {
                                      curValue + " during execution");
         }
       }
+    }
+
+    if (state == State.FUNCTION_CALL) {
+      state = State.FUNCTION_END;
     }
   }
 
