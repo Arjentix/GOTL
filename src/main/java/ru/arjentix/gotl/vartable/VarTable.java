@@ -6,7 +6,7 @@ import java.util.Set;
 
 public class VarTable {
 
-  private class VarData {
+  public class VarData {
     public String type;
     public Object value;
 

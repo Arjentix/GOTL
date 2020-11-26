@@ -12,38 +12,75 @@ import ru.arjentix.gotl.exception.ExecuteException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Stack;
 
 public class StackMachine {
 
-  private List<Token> rpnList;
-  private int pos;
-  private Stack<Token> stack;
-  private boolean newLine;
-
-  public StackMachine(List<Token> rpnList) {
-    this.rpnList = rpnList;
-    pos = 0;
-    stack = new Stack<>();
-    newLine = true;
+  private enum State {
+    NORMAL,
+    FUNCTION_CALL,
+    RETURN_CALL;
   }
 
-  public Stack<Token> getStack() {
-    return this.stack;
+  private class Context {
+    public List<Token> rpnList;
+    public int pos;
+    public Stack<Token> stack;
+    public boolean newLine;
+    public Map<String, VarTable.VarData> varTableData;
+  }
+
+  private Context context;
+  private State state;
+
+  public StackMachine(List<Token> rpnList) {
+    this.context = new Context();
+    this.context.rpnList = rpnList;
+    this.context.pos = 0;
+    this.context.stack = new Stack<>();
+    this.context.newLine = true;
+    this.state = State.NORMAL;
+  }
+
+  public Context getContext() {
+    this.context.varTableData = VarTable.getInstance().getData();
+    return this.context;
+  }
+
+  public void setContext(Context context) {
+    this.context = context;
+  }
+
+  public State getState() {
+    return this.state;
+  }
+
+  public void setState(State state) {
+    this.state = state;
   }
 
   public void execute() throws ExecuteException {
-    for (; pos < rpnList.size(); ++pos) {
-      Token curToken = rpnList.get(pos);
+    for (; context.pos < context.rpnList.size(); ++context.pos) {
+      Token curToken = context.rpnList.get(context.pos);
       LexemType curType = curToken.getType();
       String curValue = curToken.getValue();
+
+      if (curType == LexemType.FUNCTION) {
+        state = State.FUNCTION_CALL;
+        return;
+      }
+      if (curType == LexemType.RETURN_KW) {
+        state = State.RETURN_CALL;
+        return;
+      }
 
       if (curType == LexemType.VAR ||
           curType == LexemType.DIGIT ||
           curType == LexemType.CONST_STRING ||
           curType == LexemType.TYPE) {
-        stack.push(curToken);
+        context.stack.push(curToken);
       }
       else {
         switch (curType) {
@@ -93,7 +130,7 @@ public class StackMachine {
           output();
           break;
         case OUTPUT_NEWLINE:
-          newLine = true;
+          context.newLine = true;
           break;
         case FALSE_TRANSITION:
           falseTransition();
@@ -126,8 +163,8 @@ public class StackMachine {
   }
 
   private void assign() throws ExecuteException {
-    Token value = stack.pop();
-    Token variable = stack.pop();
+    Token value = context.stack.pop();
+    Token variable = context.stack.pop();
 
     Object realValue = null;
     String type = null;
@@ -186,7 +223,7 @@ public class StackMachine {
   }
 
   private void method(String name) throws ExecuteException {
-    Token variable = stack.pop();
+    Token variable = context.stack.pop();
     checkForVar(variable);
     String varType = VarTable.getInstance().getType(variable.getValue());
 
@@ -197,7 +234,7 @@ public class StackMachine {
     Collections.reverse(paramTypes);
 
     for (String paramType : paramTypes) {
-      Token arg = stack.pop();
+      Token arg = context.stack.pop();
       String argType = null;
       Object value = null;
 
@@ -242,16 +279,16 @@ public class StackMachine {
       }
     }
     if (returnType.equals("int")) {
-      stack.push(new Token(LexemType.DIGIT, Integer.toString((Integer) res)));
+      context.stack.push(new Token(LexemType.DIGIT, Integer.toString((Integer) res)));
     }
     if (returnType.equals("str")) {
-      stack.push(new Token(LexemType.CONST_STRING, (String) res));
+      context.stack.push(new Token(LexemType.CONST_STRING, (String) res));
     }
     if (returnType.equals("list")) {
-      stack.push(new Token(LexemType.DIGIT, ((GotlList) res).toString()));
+      context.stack.push(new Token(LexemType.DIGIT, ((GotlList) res).toString()));
     }
     if (returnType.equals("map")) {
-      stack.push(new Token(LexemType.CONST_STRING, ((GotlHashMap) res).toString()));
+      context.stack.push(new Token(LexemType.CONST_STRING, ((GotlHashMap) res).toString()));
     }
   }
 
@@ -275,79 +312,79 @@ public class StackMachine {
   }
 
   private void plus() throws ExecuteException {
-    int rhsValue = tokenToInt(stack.pop());
-    int lhsValue = tokenToInt(stack.pop());
+    int rhsValue = tokenToInt(context.stack.pop());
+    int lhsValue = tokenToInt(context.stack.pop());
 
-    stack.push(new Token(LexemType.DIGIT, Integer.toString(lhsValue +
+    context.stack.push(new Token(LexemType.DIGIT, Integer.toString(lhsValue +
                                                            rhsValue)));
   }
 
   private void minus() throws ExecuteException {
-    int rhsValue = tokenToInt(stack.pop());
-    int lhsValue = tokenToInt(stack.pop());
+    int rhsValue = tokenToInt(context.stack.pop());
+    int lhsValue = tokenToInt(context.stack.pop());
 
-    stack.push(new Token(LexemType.DIGIT, Integer.toString(lhsValue -
+    context.stack.push(new Token(LexemType.DIGIT, Integer.toString(lhsValue -
                                                            rhsValue)));
   }
 
   private void mult() throws ExecuteException {
-    int rhsValue = tokenToInt(stack.pop());
-    int lhsValue = tokenToInt(stack.pop());
+    int rhsValue = tokenToInt(context.stack.pop());
+    int lhsValue = tokenToInt(context.stack.pop());
 
-    stack.push(new Token(LexemType.DIGIT, Integer.toString(lhsValue *
+    context.stack.push(new Token(LexemType.DIGIT, Integer.toString(lhsValue *
                                                            rhsValue)));
   }
 
   private void div() throws ExecuteException {
-    int rhsValue = tokenToInt(stack.pop());
-    int lhsValue = tokenToInt(stack.pop());
+    int rhsValue = tokenToInt(context.stack.pop());
+    int lhsValue = tokenToInt(context.stack.pop());
 
-    stack.push(new Token(LexemType.DIGIT, Integer.toString(lhsValue /
+    context.stack.push(new Token(LexemType.DIGIT, Integer.toString(lhsValue /
                                                            rhsValue)));
   }
 
   private void greaterThan() throws ExecuteException {
-    int rhsValue = tokenToInt(stack.pop());
-    int lhsValue = tokenToInt(stack.pop());
+    int rhsValue = tokenToInt(context.stack.pop());
+    int lhsValue = tokenToInt(context.stack.pop());
 
-    stack.push(new Token(LexemType.DIGIT, Integer.toString(lhsValue >
+    context.stack.push(new Token(LexemType.DIGIT, Integer.toString(lhsValue >
                                                            rhsValue ? 1 : 0)));
   }
 
   private void lessThan() throws ExecuteException {
-    int rhsValue = tokenToInt(stack.pop());
-    int lhsValue = tokenToInt(stack.pop());
+    int rhsValue = tokenToInt(context.stack.pop());
+    int lhsValue = tokenToInt(context.stack.pop());
 
-    stack.push(new Token(LexemType.DIGIT, Integer.toString(lhsValue <
+    context.stack.push(new Token(LexemType.DIGIT, Integer.toString(lhsValue <
                                                            rhsValue ? 1 : 0)));
   }
 
   private void greaterOrEqual() throws ExecuteException {
-    int rhsValue = tokenToInt(stack.pop());
-    int lhsValue = tokenToInt(stack.pop());
+    int rhsValue = tokenToInt(context.stack.pop());
+    int lhsValue = tokenToInt(context.stack.pop());
 
-    stack.push(new Token(LexemType.DIGIT, Integer.toString(lhsValue >=
+    context.stack.push(new Token(LexemType.DIGIT, Integer.toString(lhsValue >=
                                                            rhsValue ? 1 : 0)));
   }
 
   private void lessOrEqual() throws ExecuteException {
-    int rhsValue = tokenToInt(stack.pop());
-    int lhsValue = tokenToInt(stack.pop());
+    int rhsValue = tokenToInt(context.stack.pop());
+    int lhsValue = tokenToInt(context.stack.pop());
 
-    stack.push(new Token(LexemType.DIGIT, Integer.toString(lhsValue <=
+    context.stack.push(new Token(LexemType.DIGIT, Integer.toString(lhsValue <=
                                                            rhsValue ? 1 : 0)));
   }
 
   private void equal() throws ExecuteException {
-    int rhsValue = tokenToInt(stack.pop());
-    int lhsValue = tokenToInt(stack.pop());
+    int rhsValue = tokenToInt(context.stack.pop());
+    int lhsValue = tokenToInt(context.stack.pop());
 
-    stack.push(new Token(LexemType.DIGIT, Integer.toString(lhsValue ==
+    context.stack.push(new Token(LexemType.DIGIT, Integer.toString(lhsValue ==
                                                            rhsValue ? 1 : 0)));
   }
 
   private void input() throws ExecuteException {
-    Token token = stack.pop();
+    Token token = context.stack.pop();
     checkForVar(token);
     Scanner scanner = new Scanner(System.in);
 
@@ -371,7 +408,7 @@ public class StackMachine {
   }
 
   private void output() throws ExecuteException {
-    Token token = stack.pop();
+    Token token = context.stack.pop();
 
     String str = "";
     if (token.getType() == LexemType.VAR) {
@@ -403,42 +440,42 @@ public class StackMachine {
                                  token.getValue());
     }
 
-    if (newLine) {
+    if (context.newLine) {
       System.out.print("Jon: -- ");
     }
     System.out.print(str);
 
-    if ((pos + 2 >= rpnList.size()) ||
-        ((pos + 2 < rpnList.size()) && rpnList.get(pos + 2).getType() != LexemType.OUTPUT_OP)) {
+    if ((context.pos + 2 >= context.rpnList.size()) ||
+        ((context.pos + 2 < context.rpnList.size()) && context.rpnList.get(context.pos + 2).getType() != LexemType.OUTPUT_OP)) {
       System.out.println();
     }
 
-    newLine = false;
+    context.newLine = false;
   }
 
   private void falseTransition() throws ExecuteException {
-    Token pointer = stack.pop();
-    Token condition = stack.pop();
+    Token pointer = context.stack.pop();
+    Token condition = context.stack.pop();
 
     checkForVar(pointer);
 
     int conditionValue = tokenToInt(condition);
     if (conditionValue <= 0) {
-      // -1 because where is ++pos in cycle
-      pos = tokenToInt(pointer) - 1;
+      // -1 because where is ++context.pos in cycle
+      context.pos = tokenToInt(pointer) - 1;
     }
   }
 
   private void unconditionalTransition() throws ExecuteException {
-    Token pointer = stack.pop();
+    Token pointer = context.stack.pop();
     if (pointer.getType() != LexemType.VAR) {
       throw new ExecuteException("Expected variable, but got " +
                                  pointer.getType() + ": " +
                                  pointer.getValue());
     }
 
-    // -1 because where is ++pos in cycle
-    pos = tokenToInt(pointer) - 1;
+    // -1 because where is ++context.pos in cycle
+    context.pos = tokenToInt(pointer) - 1;
   }
 
 }
