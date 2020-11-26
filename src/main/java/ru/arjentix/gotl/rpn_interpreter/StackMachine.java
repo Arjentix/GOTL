@@ -1,4 +1,4 @@
-package ru.arjentix.gotl.stack_machine;
+package ru.arjentix.gotl.rpn_interpreter;
 
 import ru.arjentix.gotl.lexer.LexemType;
 import ru.arjentix.gotl.token.Token;
@@ -18,14 +18,12 @@ import java.util.Stack;
 public class StackMachine {
 
   private List<Token> rpnList;
-  private TypeTable typeTable;
   private int pos;
   private Stack<Token> stack;
   private boolean newLine;
 
-  public StackMachine(List<Token> rpnList, TypeTable typeTable) {
+  public StackMachine(List<Token> rpnList) {
     this.rpnList = rpnList;
-    this.typeTable = typeTable;
     pos = 0;
     stack = new Stack<>();
     newLine = true;
@@ -192,7 +190,7 @@ public class StackMachine {
     checkForVar(variable);
     String varType = VarTable.getInstance().getType(variable.getValue());
 
-    Method realMethod = findMethod(name, typeTable.get(varType));
+    Method realMethod = findMethod(name, TypeTable.getInstance().get(varType));
 
     List<Object> args = new ArrayList<>();
     List<String> paramTypes = realMethod.getParamTypes(); 
@@ -201,7 +199,6 @@ public class StackMachine {
     for (String paramType : paramTypes) {
       Token arg = stack.pop();
       String argType = null;
-      String argValue = null;
       Object value = null;
 
       if (arg.getType() == LexemType.VAR) {

@@ -2,6 +2,7 @@ package ru.arjentix.gotl;
 
 import ru.arjentix.gotl.exception.GotlTokenizeException;
 import ru.arjentix.gotl.exception.LangParseException;
+import ru.arjentix.gotl.function_table.FunctionTable;
 import ru.arjentix.gotl.cacher.Cacher;
 import ru.arjentix.gotl.exception.ExecuteException;
 import ru.arjentix.gotl.lexer.Lexer;
@@ -11,7 +12,7 @@ import ru.arjentix.gotl.type_table.*;
 import ru.arjentix.gotl.types.GotlHashMap;
 import ru.arjentix.gotl.types.GotlList;
 import ru.arjentix.gotl.rpn_translator.RpnTranslator;
-import ru.arjentix.gotl.stack_machine.StackMachine;
+import ru.arjentix.gotl.rpn_interpreter.RpnInterpreter;
 import ru.arjentix.gotl.token.Token;
 import ru.arjentix.gotl.triad_optimizer.TriadOptimizer;
 
@@ -49,12 +50,12 @@ public class GotlUI {
     Cacher cacher = new Cacher(programHash, filename);
 
     List<Token> rpn;
-    if (cacher.findCache()) {
-      System.out.println("Found cache");
-      rpn = cacher.getRpn();
-      cacher.configureVarTable();
-    }
-    else {
+    // if (cacher.findCache()) {
+    //   System.out.println("Found cache");
+    //   rpn = cacher.getRpn();
+    //   cacher.configureVarTable();
+    // }
+    // else {
       Parser parser = new Parser(tokens);
       parser.lang();
 
@@ -62,34 +63,31 @@ public class GotlUI {
       rpn = translator.getRpn();
       System.out.println("Reverse Polish Notation: " + rpn + "\n");
       System.out.println("Table of variables: " + VarTable.getInstance() + "\n");
+      System.out.println("Function table: " + FunctionTable.getInstance() + "\n");
 
       TriadOptimizer optimizer = new TriadOptimizer(rpn);
       optimizer.optimize();
       clearVarTable();
 
       cacher.writeCache(programHash, rpn);
-    }
+    // }
     System.out.println("Optimized Reverse Polish Notation: " + rpn + "\n");
     System.out.println("New table of variables: " + VarTable.getInstance() + "\n");
 
-    TypeTable typeTable = buildTypeTable();
-    StackMachine stackMachine = new StackMachine(rpn, typeTable);
+    configureTypeTable();
+    RpnInterpreter rpnInterpreter = new RpnInterpreter(rpn);
 
     System.out.println("<----- Program output ----->");
-    stackMachine.execute();
+    rpnInterpreter.interpret();
   }
 
-  private static TypeTable buildTypeTable() {
-    TypeTable typeTable = new TypeTable();
-
-    initList(typeTable);
-    initMap(typeTable);
-
-    return typeTable;
+  private static void configureTypeTable() {
+    initList();
+    initMap();
   }
 
-  private static void initList(TypeTable typeTable) {
-    typeTable.put("list", new ArrayList<>(Arrays.asList(
+  private static void initList() {
+    TypeTable.getInstance().put("list", new ArrayList<>(Arrays.asList(
         new Method(".add", new ArrayList<>(Arrays.asList("Object")), "", (arg0, arg1) -> {
             GotlList list = (GotlList) arg0;
             ArrayList<Object> argsList = (ArrayList<Object>) arg1;
@@ -133,8 +131,8 @@ public class GotlUI {
     )));
   }
 
-  private static void initMap(TypeTable typeTable) {
-    typeTable.put("map", new ArrayList<>(Arrays.asList(
+  private static void initMap() {
+    TypeTable.getInstance().put("map", new ArrayList<>(Arrays.asList(
         new Method(".put", new ArrayList<>(Arrays.asList("Object", "Object")), "", (arg0, arg1) -> {
             GotlHashMap hashMap = (GotlHashMap) arg0;
             ArrayList<Object> argsList = (ArrayList<Object>) arg1;

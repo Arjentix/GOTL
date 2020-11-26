@@ -6,7 +6,17 @@ import java.util.HashMap;
 import java.util.List;
 
 public class TypeTable extends HashMap<String, List<Method>> {
-  public TypeTable() {
+  private static TypeTable instance;
+
+  private TypeTable() {
     super();
+  }
+
+  public static TypeTable getInstance() {
+    if (instance == null) {
+      instance = new TypeTable();
+    }
+
+    return instance;
   }
 }

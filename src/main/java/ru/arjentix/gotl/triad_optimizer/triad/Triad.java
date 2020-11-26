@@ -7,7 +7,7 @@ import ru.arjentix.gotl.triad_optimizer.triad.argument.*;
 import ru.arjentix.gotl.exception.ExecuteException;
 import ru.arjentix.gotl.exception.NotImplementedException;
 import ru.arjentix.gotl.lexer.LexemType;
-import ru.arjentix.gotl.stack_machine.StackMachine;
+import ru.arjentix.gotl.rpn_interpreter.StackMachine;
 import ru.arjentix.gotl.token.Token;
 import ru.arjentix.gotl.type_table.TypeTable;
 
@@ -37,7 +37,7 @@ public class Triad implements Tokenizable {
         List<Token> rpn = first.tokenize();
         rpn.addAll(second.tokenize());
         rpn.add(operation);
-        StackMachine stackMachine = new StackMachine(rpn, new TypeTable());
+        StackMachine stackMachine = new StackMachine(rpn);
         stackMachine.execute();
         evaluationRes = Integer.parseInt(stackMachine.getStack().peek().getValue());
         changed = false;
