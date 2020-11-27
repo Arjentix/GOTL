@@ -44,7 +44,7 @@ public class GotlUI {
     }
     String rawInput = Files.readString(Paths.get(filename));
 
-    System.out.println("<----- Iterpretation info ----->");
+    System.out.println("<----- Interpretation info ----->");
 
     Lexer lexer = new Lexer(rawInput);
     List<Token> tokens = lexer.getTokens();
