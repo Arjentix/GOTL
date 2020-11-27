@@ -394,9 +394,10 @@ public class StackMachine {
     checkForVar(token);
     Scanner scanner = new Scanner(System.in);
 
-    System.out.print("Ygritte: -- ");
+    System.out.print("\nYgritte: -- ");
 
     String str = scanner.nextLine();
+    this.context.newLine = false;
     String type = "int";
     try {
       Integer.parseInt(str);
@@ -447,14 +448,9 @@ public class StackMachine {
     }
 
     if (context.newLine) {
-      System.out.print("Jon: -- ");
+      System.out.print("\nJon: -- ");
     }
     System.out.print(str);
-
-    if ((context.pos + 2 >= context.rpnList.size()) ||
-        ((context.pos + 2 < context.rpnList.size()) && context.rpnList.get(context.pos + 2).getType() != LexemType.OUTPUT_OP)) {
-      System.out.println();
-    }
 
     context.newLine = false;
   }

@@ -132,15 +132,15 @@ public class RpnTranslator {
 
       // Processing JON
       if (curType == LexemType.JON) {
-          wasInput = false;
-          rpnList.add(new Token(LexemType.OUTPUT_NEWLINE, "\n"));
-          continue;
+        wasInput = false;
+        rpnList.add(new Token(LexemType.OUTPUT_NEWLINE, "\n"));
+        continue;
       }
 
       // Processing YGRITTE
       if (curType == LexemType.YGRITTE) {
-          wasInput = true;
-          continue;
+        wasInput = true;
+        continue;
       }
 
       // Processing INPUT_OUTPUT_OP

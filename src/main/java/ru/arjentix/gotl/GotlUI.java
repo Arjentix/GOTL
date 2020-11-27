@@ -79,6 +79,7 @@ public class GotlUI {
 
     System.out.println("<----- Program output ----->");
     rpnInterpreter.interpret();
+    System.out.println();
   }
 
   private static void configureTypeTable() {
