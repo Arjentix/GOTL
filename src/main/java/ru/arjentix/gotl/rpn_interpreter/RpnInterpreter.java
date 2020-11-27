@@ -55,7 +55,7 @@ public class RpnInterpreter {
     String funcName = oldContext.rpnList.get(oldContext.pos).getValue();
     Function function = FunctionTable.getInstance().get(funcName);
 
-    Map<String, VarTable.VarData> varTableData = new HashMap<>();
+    Map<String, VarTable.VarData> varTableData = function.getVarTableData();
     ListIterator<String> it = function.getArgs().listIterator(function.getArgs().size());
     Stack<Token> stackCopy = new Stack<>();
     stackCopy.addAll(oldContext.stack);

@@ -79,6 +79,10 @@ public class VarTable {
     hashMap = new HashMap<>(data);
   }
 
+  public void clear() {
+    hashMap.clear();
+  }
+
   public String toString() {
     StringBuilder builder = new StringBuilder("{");
     boolean first = true;

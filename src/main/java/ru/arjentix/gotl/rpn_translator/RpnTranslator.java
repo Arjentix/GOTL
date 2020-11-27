@@ -5,9 +5,12 @@ import ru.arjentix.gotl.function_table.FunctionTable;
 import ru.arjentix.gotl.lexer.LexemType;
 import ru.arjentix.gotl.token.Token;
 import ru.arjentix.gotl.vartable.VarTable;
+import ru.arjentix.gotl.vartable.VarTable.VarData;
 
 import java.util.List;
+import java.util.Map;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Stack;
 
 public class RpnTranslator {
@@ -30,9 +33,10 @@ public class RpnTranslator {
     pos = extractFunctionArgs(pos, funcName, args);
 
     List<Token> funcBody = new ArrayList<>();
-    pos = extractFunctionBody(pos, funcName, funcBody);
+    Map<String, VarData> funcVarTableData = new HashMap<>();
+    pos = extractFunctionBody(pos, funcName, funcBody, funcVarTableData);
 
-    FunctionTable.getInstance().put(funcName, new Function(args, funcBody));
+    FunctionTable.getInstance().put(funcName, new Function(args, funcBody, funcVarTableData));
 
     return pos - 1;
   }
@@ -48,9 +52,12 @@ public class RpnTranslator {
     return pos;
   }
 
-  private int extractFunctionBody(int pos, String funcName, List<Token> funcBody) {
+  private int extractFunctionBody(int pos, String funcName, List<Token> funcBody,
+                                  Map<String, VarData> funcVarTableData) {
     List<Token> nonRpnBody = new ArrayList<>();
     int unclosedBracketsCount = 1;
+
+    // Extracting body
     for (pos += 2; unclosedBracketsCount != 0; ++pos) {
       Token curToken = tokens.get(pos);
       LexemType curType = curToken.getType();
@@ -69,11 +76,21 @@ public class RpnTranslator {
     }
     nonRpnBody.remove(nonRpnBody.size() - 1); // Removing last bracket
 
-    // Making RPN
+    // Copying current values
     List<Token> tokensCopy = this.tokens;
     this.tokens = nonRpnBody;
+
+    // Replacing with function values
+    Map<String, VarData> varTableDataCopy = VarTable.getInstance().getData();
+    VarTable.getInstance().clear();
+
+    // Making RPN
     funcBody.addAll(getRpn());
+
+    // Moving values back
     this.tokens = tokensCopy;
+    funcVarTableData.putAll(VarTable.getInstance().getData());
+    VarTable.getInstance().setData(varTableDataCopy);
 
     return pos;
   }
