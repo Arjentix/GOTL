@@ -30,7 +30,7 @@ public class Function {
   }
 
   public String toString() {
-    return "args = " + args + ", body = " + body + " , varTableData = " + varTableData;
+    return "args = " + args + ", body = " + body + ", varTableData = " + varTableData;
   }
 
 }

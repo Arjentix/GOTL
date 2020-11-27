@@ -81,7 +81,8 @@ public class RpnTranslator {
     this.tokens = nonRpnBody;
 
     // Replacing with function values
-    Map<String, VarData> varTableDataCopy = VarTable.getInstance().getData();
+    Map<String, VarData> varTableDataCopy = new HashMap<>();
+    varTableDataCopy.putAll(VarTable.getInstance().getData());
     VarTable.getInstance().clear();
 
     // Making RPN

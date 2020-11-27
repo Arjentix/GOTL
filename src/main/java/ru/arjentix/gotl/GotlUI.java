@@ -56,9 +56,10 @@ public class GotlUI {
 
     List<Token> rpn;
     if (!noCache && cacher.findCache()) {
-      System.out.println("Found cache");
+      System.out.println("Found cache in " + cacher.getCacheFilename());
       rpn = cacher.getRpn();
       cacher.configureVarTable();
+      cacher.configureFunctionTable();
     }
     else {
       Parser parser = new Parser(tokens);
@@ -78,6 +79,7 @@ public class GotlUI {
     }
     System.out.println("Optimized Reverse Polish Notation: " + rpn + "\n");
     System.out.println("New table of variables: " + VarTable.getInstance() + "\n");
+    System.out.println("New function table: " + FunctionTable.getInstance() + "\n");
 
     configureTypeTable();
     RpnInterpreter rpnInterpreter = new RpnInterpreter(rpn);

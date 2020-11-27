@@ -11,12 +11,12 @@ public class VarTable {
     public Object value;
 
     public VarData(String type, Object value) {
-        this.type = type;
-        this.value = value;
+      this.type = type;
+      this.value = value;
     }
 
     public String toString() {
-        return type + ", " + value;
+      return "{" + type + ", " + value + "}";
     }
   }
 
