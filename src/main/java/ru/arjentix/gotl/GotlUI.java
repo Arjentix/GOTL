@@ -32,11 +32,16 @@ public class GotlUI {
     System.out.println("Start GOTL UI");
 
     if (args.length < 1) {
-      System.err.println("Usage: GotlUI <filename>");
+      System.err.println("Usage: GotlUI [--no-cache] <filename>");
       System.exit(-1);
     }
 
+    boolean noCache = false;
     String filename = args[0];
+    if (args[0].equals("--no-cache")) {
+      noCache = true;
+      filename = args[1];
+    }
     String rawInput = Files.readString(Paths.get(filename));
 
     System.out.println("<----- Iterpretation info ----->");
@@ -50,12 +55,12 @@ public class GotlUI {
     Cacher cacher = new Cacher(programHash, filename);
 
     List<Token> rpn;
-    // if (cacher.findCache()) {
-    //   System.out.println("Found cache");
-    //   rpn = cacher.getRpn();
-    //   cacher.configureVarTable();
-    // }
-    // else {
+    if (!noCache && cacher.findCache()) {
+      System.out.println("Found cache");
+      rpn = cacher.getRpn();
+      cacher.configureVarTable();
+    }
+    else {
       Parser parser = new Parser(tokens);
       parser.lang();
 
@@ -70,7 +75,7 @@ public class GotlUI {
       clearVarTable();
 
       cacher.writeCache(programHash, rpn);
-    // }
+    }
     System.out.println("Optimized Reverse Polish Notation: " + rpn + "\n");
     System.out.println("New table of variables: " + VarTable.getInstance() + "\n");
 
