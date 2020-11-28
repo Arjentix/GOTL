@@ -3,7 +3,7 @@ expr -> function_decl|function_call|method_call|assign_expr|cond_expr|while_expr
 assign_expr -> DAENERIS VAR ASSIGN_OP assign_value SEMICOLON
 assign_value -> value_expr|TYPE|CONST_STRING
 value_expr -> VAR|DIGIT|arithm_expr|method_call|function_call
-function_decl -> RGLOR FUNCTION OPEN_PARANTH param_list? CLOSE_PARANTH OPEN_BRACKET body CLOSE_BRACKET
+function_decl -> RGLOR FUNCTION OPEN_PARANTH param_list? CLOSE_PARANTH body
 param_list -> VAR (COMMA VAR)*
 function_call -> FUNCTION OPEN_PARANTH arg_list? CLOSE_PARANTH SEMICOLON
 method_call -> VAR METHOD OPEN_PARANTH arg_list? CLOSE_PARANTH SEMICOLON
