@@ -170,7 +170,12 @@ public class Parser {
 
   private ParseResult argList() {
     List<Function<Object, ParseResult>> expressions = new ArrayList<>();
-    expressions.add((arg0) -> {return valueExpr();});
+    expressions.add((arg0) -> {
+        List<Function<Object, ParseResult>> orExpressions = new ArrayList<>();
+        orExpressions.add((arg2) -> {return valueExpr();});
+        orExpressions.add((arg2) -> {return constString();});
+        return orOperation(orExpressions);
+    });
     expressions.add((arg0) -> {
       List<Function<Object, ParseResult>> starExpressions = new ArrayList<>();
       starExpressions.add((arg1) -> {return comma();});
