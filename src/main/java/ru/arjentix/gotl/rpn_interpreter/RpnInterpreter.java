@@ -31,18 +31,21 @@ public class RpnInterpreter {
     stackMachine.execute();
 
     State state = stackMachine.getState();
+    int functionNesting = 0;
     while (state != State.NORMAL) {
       switch (stackMachine.getState()) {
         case NORMAL:
           break;
         case FUNCTION_CALL:
+          ++functionNesting;
           switchContext();
           stackMachine.execute();
           break;
         case FUNCTION_END:
         case RETURN_CALL:
+          --functionNesting;
           switchContextBack();
-          stackMachine.setState(State.NORMAL);
+          stackMachine.setState(functionNesting == 0 ? State.NORMAL : State.FUNCTION_CALL);
           stackMachine.execute();
           break;
       }
@@ -100,6 +103,7 @@ public class RpnInterpreter {
 
   private void switchContextBack() {
     if (contextStack.empty()) {
+      System.out.println("RETURN");
       return;
     }
 
