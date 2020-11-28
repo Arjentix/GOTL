@@ -23,13 +23,6 @@ Rglor: @max(a, b) {
     return b;
 }
 
-Rglor: @findCircumference(r) {
-    Daeneris: pi = 3;
-    Daeneris: res = Tyrion: 2 * pi * r;
-
-    return res;
-}
-
 @printHello();
 
 @printArg(c);
@@ -43,8 +36,31 @@ Jon: -- "Max: " -- @max(a, b);;
 
 @printArg(c);
 
+
+
+Rglor: @findCircumference(r) {
+    Daeneris: pi = 3;
+    Daeneris: res = Tyrion: 2 * pi * r;
+
+    return res;
+}
+
 Jon: -- "Enter radius:";
 Ygritte: -- r;
 Jon: -- "Circumference: " -- @findCircumference(r);;
+
+
+
+Rglor: @someFunc() {
+    Jon: -- "@someFunc call";
+}
+
+Rglor: @someFuncCaller() {
+    Jon: -- "@someFuncCaller call";
+    @someFunc();
+}
+
+Jon: -- "Example of calling function from other function:";
+@someFuncCaller();
 
 Valar Dohaeris
