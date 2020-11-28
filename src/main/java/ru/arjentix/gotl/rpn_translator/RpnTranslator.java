@@ -247,15 +247,9 @@ public class RpnTranslator {
           stack.push(curToken);
       }
       else {
-        Token top = stack.peek();
         while (!stack.empty() &&
-                top.getType().getPriority() >= curType.getPriority()) {
-          rpnList.add(top);
-          stack.pop();
-          top = stack.peek();
-        }
-        if (stack.empty() && top != null) { // Adding last element
-          rpnList.add(top);
+                stack.peek().getType().getPriority() >= curType.getPriority()) {
+          rpnList.add(stack.pop());
         }
 
         stack.push(curToken);
