@@ -103,7 +103,6 @@ public class RpnInterpreter {
 
   private void switchContextBack() {
     if (contextStack.empty()) {
-      System.out.println("RETURN");
       return;
     }
 
