@@ -35,7 +35,7 @@ public class Token {
     final int b = value.hashCode();
     final int x = 31;
 
-    return a * x * x + b;
+    return a * x + b;
   }
 
   @Override
