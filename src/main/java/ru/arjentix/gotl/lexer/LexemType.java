@@ -30,9 +30,9 @@ public enum LexemType {
   CLOSE_PARENTH("\\)", 1),
   OPEN_BRACKET("\\{", 1),
   CLOSE_BRACKET("\\}", 1),
-  FUNCTION("\\@[a-zA-z]+", 5),
-  METHOD("\\.[a-zA-z]+", 5),
-  VAR("[a-zA-z]+", 0),
+  FUNCTION("\\@[a-zA-Z]+", 5),
+  METHOD("\\.[a-zA-Z]+", 5),
+  VAR("[a-zA-Z]+", 0),
   // Types for RPN
   FALSE_TRANSITION("", 10),
   UNCONDITIONAL_TRANSITION("", 10),
@@ -54,6 +54,6 @@ public enum LexemType {
   }
 
   public int getPriority() {
-      return this.priority;
+    return this.priority;
   }
 }
