@@ -33,7 +33,7 @@ public class RpnInterpreter {
     State state = stackMachine.getState();
     int functionNesting = 0;
     while (state != State.NORMAL) {
-      switch (stackMachine.getState()) {
+      switch (state) {
         case NORMAL:
           break;
         case FUNCTION_CALL:
