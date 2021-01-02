@@ -38,6 +38,7 @@ public enum LexemType {
   FALSE_TRANSITION("", 10),
   UNCONDITIONAL_TRANSITION("", 10),
   INPUT_OP("", 10),
+  NEW_THREAD("", 4),
   OUTPUT_OP("", 2),
   OUTPUT_NEWLINE("", 2),
   EMPTY_LEXEME("", -1);

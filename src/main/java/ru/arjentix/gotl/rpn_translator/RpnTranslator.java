@@ -119,6 +119,10 @@ public class RpnTranslator {
         continue;
       }
 
+      if (curType == LexemType.BRAN) {
+        stack.push(new Token(LexemType.NEW_THREAD, ""));
+      }
+
       // Skipping tokens with priority < 0
       if (curType.getPriority() < 0) {
         continue;
