@@ -64,7 +64,13 @@ public class StackMachine {
   }
 
   public void execute() throws ExecuteException {
-    for (; context.pos < context.rpnList.size(); ++context.pos) {
+    execute(context.rpnList.size());
+  }
+
+  public void execute(int n) throws ExecuteException {
+    for (int i = 0;
+         (i < n) && (context.pos < context.rpnList.size());
+         ++i, ++context.pos) {
       Token curToken = context.rpnList.get(context.pos);
       LexemType curType = curToken.getType();
       String curValue = curToken.getValue();
@@ -147,7 +153,8 @@ public class StackMachine {
       }
     }
 
-    if (state == State.FUNCTION_CALL) {
+    if ((context.pos == context.rpnList.size()) &&
+        (state == State.FUNCTION_CALL)) {
       state = State.FUNCTION_END;
     }
   }
