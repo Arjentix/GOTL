@@ -11,6 +11,7 @@ public enum LexemType {
   CERCEI("Cercei\\:", -1),
   ARYA("Arya\\:", -1),
   RGLOR("Rglor:", -1),
+  BRAN("Bran:", -1),
   JON("Jon\\:", 0),
   YGRITTE("Ygritte\\:", 0),
   COMMA(",", -1),

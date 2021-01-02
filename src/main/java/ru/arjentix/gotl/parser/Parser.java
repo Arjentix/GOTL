@@ -72,6 +72,7 @@ public class Parser {
     expressions.add((arg) -> {return inputExpr();});
     expressions.add((arg) -> {return outputExpr();});
     expressions.add((arg) -> {return returnExpr();});
+    expressions.add((arg) -> {return newThreadExpr();});
 
     return orOperation(expressions);
   }
@@ -166,6 +167,19 @@ public class Parser {
 
   private ParseResult method() {
     return matchToken(match(), LexemType.METHOD);
+  }
+
+  private ParseResult newThreadExpr() {
+    List<Function<Object, ParseResult>> expressions = new ArrayList<>();
+    expressions.add((arg0) -> {return bran();});
+    expressions.add((arg0) -> {return function();});
+    expressions.add((arg0) -> {return semicolon();});
+
+    return andOperation(expressions);
+  }
+
+  private ParseResult bran() {
+    return matchToken(match(), LexemType.BRAN);
   }
 
   private ParseResult argList() {
