@@ -20,9 +20,12 @@ public class StackMachine {
 
   public enum State {
     NORMAL,
+    END,
     FUNCTION_CALL,
+    FUNCTION_EXECUTION,
     FUNCTION_END,
-    RETURN_CALL;
+    RETURN_CALL,
+    NEW_THREAD_CALL;
   }
 
   public static class Context {
@@ -31,6 +34,14 @@ public class StackMachine {
     public Stack<Token> stack;
     public boolean newLine;
     public Map<String, VarTable.VarData> varTableData;
+
+    public Context() {
+      this.pos = 0;
+      this.newLine = true;
+      this.stack = new Stack<>();
+      this.rpnList = new ArrayList<>();
+      this.varTableData = VarTable.getInstance().getData();
+    }
   }
 
   private Context context;
@@ -39,9 +50,6 @@ public class StackMachine {
   public StackMachine(List<Token> rpnList) {
     this.context = new Context();
     this.context.rpnList = rpnList;
-    this.context.pos = 0;
-    this.context.stack = new Stack<>();
-    this.context.newLine = true;
     this.state = State.NORMAL;
   }
 
@@ -76,7 +84,17 @@ public class StackMachine {
       String curValue = curToken.getValue();
 
       if (curType == LexemType.FUNCTION) {
+        // If next is new thread call
+        if ((context.pos != context.rpnList.size() - 1) &&
+            (context.rpnList.get(context.pos + 1).getType() == LexemType.NEW_THREAD)) {
+          continue;
+        }
+
         state = State.FUNCTION_CALL;
+        return;
+      }
+      if (curType == LexemType.NEW_THREAD) {
+        state = State.NEW_THREAD_CALL;
         return;
       }
       if (curType == LexemType.RETURN_KW) {
@@ -154,8 +172,12 @@ public class StackMachine {
     }
 
     if ((context.pos == context.rpnList.size()) &&
-        (state == State.FUNCTION_CALL)) {
+        (state == State.FUNCTION_EXECUTION)) {
       state = State.FUNCTION_END;
+    }
+    else if ((context.pos == context.rpnList.size()) &&
+             (state == State.NORMAL)) {
+      state = State.END;
     }
   }
 

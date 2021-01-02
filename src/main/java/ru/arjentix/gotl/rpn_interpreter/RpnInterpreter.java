@@ -1,5 +1,6 @@
 package ru.arjentix.gotl.rpn_interpreter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
@@ -17,64 +18,134 @@ import ru.arjentix.gotl.vartable.VarTable;
 import ru.arjentix.gotl.vartable.VarTable.VarData;
 
 public class RpnInterpreter {
-  private List<Token> rpnList;
-  private StackMachine stackMachine;
-  private Stack<Context> contextStack;
+  private class ThreadData {
+    public Stack<Context> contextStack;
+    public int functionNesting;
+    State state;
 
-  public RpnInterpreter(List<Token> rpnList) {
-    this.rpnList = rpnList;
-    this.stackMachine = new StackMachine(this.rpnList);
-    this.contextStack = new Stack<>();
-  }
+    public ThreadData() {
+      contextStack = new Stack<>();
+      functionNesting = 0;
+      state = State.NORMAL;
+    }
 
-  public void interpret() throws ExecuteException {
-    stackMachine.execute();
-
-    State state = stackMachine.getState();
-    int functionNesting = 0;
-    while (state != State.NORMAL) {
-      switch (state) {
-        case NORMAL:
-          break;
-        case FUNCTION_CALL:
-          ++functionNesting;
-          switchContext();
-          stackMachine.execute();
-          break;
-        case FUNCTION_END:
-        case RETURN_CALL:
-          --functionNesting;
-          switchContextBack();
-          stackMachine.setState(functionNesting == 0 ? State.NORMAL : State.FUNCTION_CALL);
-          stackMachine.execute();
-          break;
-      }
-      state = stackMachine.getState();
+    public ThreadData(Stack<Context> contextStack, int functionNesting, State state) {
+      this.contextStack = contextStack;
+      this.functionNesting = functionNesting;
+      this.state = state;
     }
   }
 
-  private void switchContext() {
+  private StackMachine stackMachine;
+  private List<ThreadData> threads;
+
+  public RpnInterpreter(List<Token> rpnList) {
+    this.stackMachine = new StackMachine(rpnList);
+    this.threads = new ArrayList<>();
+
+    Context context = new Context();
+    context.rpnList = rpnList;
+
+    Stack<Context> contextStack = new Stack<>();
+    contextStack.push(context);
+    threads.add(new ThreadData(contextStack, 0, State.NORMAL)); // Adding context for main thread
+  }
+
+  public void interpret() throws ExecuteException {
+    boolean endCondition = false;
+
+    while (!endCondition) {
+      endCondition = true;
+
+      for (int i = 0; i < threads.size(); ++i) {
+        ThreadData threadData = threads.get(i);
+        State state = executeThread(threadData);
+
+        // End if all threads finished with END state
+        endCondition = endCondition && (state == State.END);
+      }
+    }
+  }
+
+  private State executeThread(ThreadData threadData) throws ExecuteException {
+    final int countOfOperations = 3;
+
+    if (threadData.contextStack.empty()) {
+      return State.END;
+    }
+
+    stackMachine.setContext(threadData.contextStack.pop());
+    stackMachine.setState(threadData.state);
+    stackMachine.execute(countOfOperations);
+
+    switch (stackMachine.getState()) {
+      case NORMAL:
+      case FUNCTION_EXECUTION:
+        threadData.contextStack.push(stackMachine.getContext());
+        threadData.state = stackMachine.getState();
+        break;
+      case END:
+        break;
+      case FUNCTION_CALL:
+        ++threadData.functionNesting;
+        switchContext(threadData.contextStack);
+        threadData.state = State.FUNCTION_EXECUTION;
+        break;
+      case FUNCTION_END:
+      case RETURN_CALL:
+        --threadData.functionNesting;
+        switchContextBack(threadData.contextStack);
+        threadData.state = (threadData.functionNesting == 0 ? State.NORMAL : State.FUNCTION_EXECUTION);
+        break;
+      case NEW_THREAD_CALL:
+        addNewThread(threadData.contextStack);
+        break;
+    }
+
+    return stackMachine.getState();
+  }
+
+  // n - count of tokens to go back to find function name
+  private void switchContext(Stack<Context> contextStack) {
     Context oldContext = stackMachine.getContext();
     String funcName = oldContext.rpnList.get(oldContext.pos).getValue();
     Function function = FunctionTable.getInstance().get(funcName);
 
-    Map<String, VarTable.VarData> varTableData = function.getVarTableData();
+    Map<String, VarTable.VarData> varTableData = new HashMap<>();
+    varTableData.putAll(function.getVarTableData());
     ListIterator<String> it = function.getArgs().listIterator(function.getArgs().size());
     Stack<Token> stackCopy = new Stack<>();
     stackCopy.addAll(oldContext.stack);
     while (it.hasPrevious()) {
-      varTableData.put(it.previous(), getVarData(stackCopy.pop()));
+      String tmp = it.previous();
+      varTableData.put(tmp, getVarData(stackCopy.pop()));
     }
 
     contextStack.push(oldContext);
-    Context context = new Context();
-    context.pos = 0;
-    context.newLine = true;
-    context.stack = new Stack<Token>();
-    context.rpnList = FunctionTable.getInstance().get(funcName).getBody();
-    context.varTableData = varTableData;
 
-    stackMachine.setContext(context);
+    Context context = new Context();
+    context.rpnList = function.getBody();
+    context.varTableData = varTableData;
+    contextStack.push(context);
+  }
+
+  private void addNewThread(Stack<Context> contextStack) {
+    Context curContext = stackMachine.getContext();
+
+    String funcName = curContext.rpnList.get(curContext.pos - 1).getValue();
+    Function function = FunctionTable.getInstance().get(funcName);
+
+    Context context = new Context();
+    context.rpnList = function.getBody();
+    context.varTableData = function.getVarTableData();
+
+    Stack<Context> newThreadContextStack = new Stack<>();
+    newThreadContextStack.push(context);
+
+    threads.add(new ThreadData(newThreadContextStack, 0, State.NORMAL));
+
+    ++curContext.pos;
+    contextStack.push(curContext);
   }
 
   private VarData getVarData(Token token) {
@@ -92,7 +163,7 @@ public class RpnInterpreter {
         break;
       case CONST_STRING:
         varData.type = "str";
-        varData.value = token.getValue();
+        varData.value = token.getValue().substring(1, token.getValue().length() - 1);
         break;
       default:
         break;
@@ -101,7 +172,7 @@ public class RpnInterpreter {
     return varData;
   }
 
-  private void switchContextBack() {
+  private void switchContextBack(Stack<Context> contextStack) {
     if (contextStack.empty()) {
       return;
     }
@@ -134,6 +205,6 @@ public class RpnInterpreter {
       ++context.pos;
     }
 
-    stackMachine.setContext(context);
+    contextStack.push(context);
   }
 }

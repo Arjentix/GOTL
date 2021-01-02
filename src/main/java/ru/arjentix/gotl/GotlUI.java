@@ -81,12 +81,12 @@ public class GotlUI {
     System.out.println("New table of variables: " + VarTable.getInstance() + "\n");
     System.out.println("New function table: " + FunctionTable.getInstance() + "\n");
 
-    // configureTypeTable();
-    // RpnInterpreter rpnInterpreter = new RpnInterpreter(mainRpn);
+    configureTypeTable();
+    RpnInterpreter rpnInterpreter = new RpnInterpreter(mainRpn);
 
-    // System.out.println("<----- Program output ----->");
-    // rpnInterpreter.interpret();
-    // System.out.println();
+    System.out.println("<----- Program output ----->");
+    rpnInterpreter.interpret();
+    System.out.println();
   }
 
   private static Arguments parseArgs(String[] args) {
