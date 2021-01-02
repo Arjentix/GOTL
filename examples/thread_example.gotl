@@ -1,0 +1,21 @@
+Valar Morghulis
+
+Rglor: @print(line, count) {
+    Daeneris: i = 0;
+    Arya: while (i < count) {
+        Jon: -- line -- " " -- i;
+        Daeneris: i = Tyrion: i + 1;
+    }
+}
+
+Rglor: @threadFunc() {
+    Jon: -- "Started new thread";
+    @print("thread", 10);
+}
+
+
+Bran: @threadFunc;
+
+@print("main", 10);
+
+Valar Dohaeris
