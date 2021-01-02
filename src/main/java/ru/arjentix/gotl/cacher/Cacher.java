@@ -101,7 +101,10 @@ public class Cacher {
   public void configureFunctionTable() throws IOException {
     String allData = Files.readString(cacheFile);
     String functionTableStr = allData.split("\n\n")[3];
-    
+
+    if (functionTableStr.length() < 4) {
+      return;
+    }
     functionTableStr = functionTableStr.substring(1, functionTableStr.length() - 2);
 
     Matcher matcher = Pattern.compile(functionPattern + spacePattern + "\\:" + spacePattern + argsPattern + "," + spacePattern + bodyPattern + "," + spacePattern + varTableDataPattern).matcher(functionTableStr);
