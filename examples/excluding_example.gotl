@@ -1,0 +1,18 @@
+Valar Morghulis
+
+Jon: -- "Enter variable d";
+Ygritte: -- d;
+Jon: -- "Enter variable c";
+Ygritte: -- c;
+Jon: -- "Enter variable b";
+Ygritte: -- b;
+
+Daeneris: d = Tyrion: d + c*b;
+Daeneris: a = Tyrion: d + c*b;
+Daeneris: c = Tyrion: d + c*b;
+
+Jon: -- "d is " -- d;
+Jon: -- "a is " -- a;
+Jon: -- "c is " -- c;
+
+Valar Dohaeris

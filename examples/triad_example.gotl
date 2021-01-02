@@ -17,15 +17,4 @@ Jon: -- "a is " -- a;
 Jon: -- "b is " -- b;
 Jon: -- "e is " -- e;
 
-
-Jon: -- "Enter variable d";
-Ygritte: -- d;
-Daeneris: d = Tyrion: d + c*b;
-Daeneris: a = Tyrion: d + c*b;
-Daeneris: c = Tyrion: d + c*b;
-
-Jon: -- "d is " -- d;
-Jon: -- "a is " -- a;
-Jon: -- "c is " -- c;
-
 Valar Dohaeris
